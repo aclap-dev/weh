@@ -1,0 +1,53 @@
+{
+    "weh_prefs_label_myparam_string": {
+        "message": "String parameter"
+    },
+    "weh_prefs_description_myparam_string": {
+        "message": "Only letters and spaces, 20 characters max"
+    },
+    "weh_prefs_label_myparam_integer": {
+        "message": "Integer parameter"
+    },
+    "weh_prefs_description_myparam_integer": {
+        "message": "Minimum -10, maximum 100"
+    },
+    "weh_prefs_label_myparam_float": {
+        "message": "Float parameter"
+    },
+    "weh_prefs_description_myparam_float": {
+        "message": "Minimum 1.5, maximum 10.8"
+    },
+    "weh_prefs_label_myparam_boolean": {
+        "message": "Boolean parameter"
+    },
+    "weh_prefs_description_myparam_boolean": {
+        "message": "This is a boolean"
+    },
+    "weh_prefs_label_myparam_choice": {
+        "message": "Choice parameter"
+    },
+    "weh_prefs_description_myparam_choice": {
+        "message": "Pick one option"
+    },
+
+    "sample_panel_text": {
+        "message": "Hello there !"
+    },
+    "settings": {
+        "message": "Settings"
+    },
+    
+    "save": {
+        "message": "Save"
+    },
+    "cancel": {
+        "message": "Cancel"
+    },
+    "default": {
+        "message": "Default"
+    },
+    "version": {
+        "message": "Version"
+    }
+
+}
