@@ -12,6 +12,8 @@ const rename = require('gulp-rename');
 const runSequence = require('run-sequence');
 const browserify = require('browserify');
 const merge = require('merge-stream');
+const es2015 = require('babel-preset-es2015');
+const react = require('babel-preset-react');
 
 const fs = require("fs");
 const argv = require('yargs').argv;
@@ -32,7 +34,7 @@ console.info("argv",argv);
 
 gulp.task("weh-background-scripts",function() {
     return browserify({entries: "src/background/weh.js", debug: dev})
-        .transform("babelify", { presets: ["es2015"] })
+        .transform("babelify", { presets: [es2015] })
         .bundle()
         .pipe(source('weh-bg.js'))
         .pipe(buffer())
@@ -44,7 +46,7 @@ gulp.task("weh-background-scripts",function() {
 
 gulp.task("weh-content-scripts",function() {
     return browserify({entries: "src/content/weh-ct.js", debug: dev})
-        .transform("babelify", { presets: ["es2015"] })
+        .transform("babelify", { presets: [es2015] })
         .bundle()
         .pipe(source('weh-ct.js'))
         .pipe(buffer())
@@ -56,7 +58,7 @@ gulp.task("weh-content-scripts",function() {
 
 gulp.task("weh-content-jsx-scripts",function() {
     return browserify({entries: "src/content/weh-ct-react.jsx", debug: dev})
-        .transform("babelify", { presets: ["es2015","react"] })
+        .transform("babelify", { presets: [es2015,react] })
         .bundle()
         .pipe(source('weh-ct-react.js'))
         .pipe(buffer())
@@ -85,7 +87,7 @@ function Task(task,taskFn) {
 Task("prj-background-scripts",function(src,cb) {
     return gulp.src(path.join(prjDir,src+"/background/**/*.js"))
         .pipe(babel({
-            presets: ['es2015']
+            presets: [es2015]
         }))
         .pipe(gulp.dest(path.join(buildDir,"background")))
         .on("end",cb);
@@ -94,7 +96,7 @@ Task("prj-background-scripts",function(src,cb) {
 Task("prj-content-scripts",function(src,cb) {
     return gulp.src(path.join(prjDir,src+"/content/**/*.js"))
         .pipe(babel({
-            presets: ['es2015']
+            presets: [es2015]
         }))
         .pipe(gulp.dest(path.join(buildDir,"content")))
         .on("end",cb);
@@ -103,7 +105,7 @@ Task("prj-content-scripts",function(src,cb) {
 Task("prj-content-jsx-scripts",function(src,cb) {
     return gulp.src(path.join(prjDir,src+"/content/**/*.jsx"))
         .pipe(babel({
-            presets: ['es2015','react']
+            presets: [es2015,react]
         }))
         .pipe(gulp.dest(path.join(buildDir,"content")))
         .on("end",cb);
