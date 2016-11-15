@@ -1,4 +1,4 @@
-module.exports = (function() {
+weh.ui = (function() {
     
     var manifest = browser.runtime.getManifest();
 	var panels = {};

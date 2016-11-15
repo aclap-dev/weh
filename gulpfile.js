@@ -1,7 +1,6 @@
 const gulp = require("gulp");
 const gutil = require("gulp-util");
 const babel = require('gulp-babel');
-const babelify = require('babelify');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const sourcemaps = require('gulp-sourcemaps');
@@ -9,8 +8,8 @@ const uglify = require('gulp-uglify');
 const del = require("del");
 const sass = require('gulp-sass');
 const rename = require('gulp-rename');
+const concat = require("gulp-concat");
 const runSequence = require('run-sequence');
-const browserify = require('browserify');
 const merge = require('merge-stream');
 const es2015 = require('babel-preset-es2015');
 const react = require('babel-preset-react');
@@ -29,42 +28,32 @@ if(argv.features)
     featDirs = featDirs.concat(argv.features.split(",").map(function(feature) {
         return "src-"+feature;
     }));
-console.info("featDirs",featDirs);
-console.info("argv",argv);
 
 gulp.task("weh-background-scripts",function() {
-    return browserify({entries: "src/background/weh.js", debug: dev})
-        .transform("babelify", { presets: [es2015] })
-        .bundle()
-        .pipe(source('weh-bg.js'))
-        .pipe(buffer())
-        .pipe(!dev && sourcemaps.init() || gutil.noop())
+    return gulp.src(["core","prefs","ui","ajax"].map(function(module) {
+            return "src/background/weh-"+module+".js";
+        }))
+        .pipe(concat("weh-bg.js"))
+        .pipe(babel({
+            presets: [es2015]
+        }))
         .pipe(!dev && uglify() || gutil.noop())
-        .pipe(!dev && sourcemaps.write('./maps') || gutil.noop())
         .pipe(gulp.dest(path.join(buildDir,"background")));
 });
 
 gulp.task("weh-content-scripts",function() {
-    return browserify({entries: "src/content/weh-ct.js", debug: dev})
-        .transform("babelify", { presets: [es2015] })
-        .bundle()
-        .pipe(source('weh-ct.js'))
-        .pipe(buffer())
-        .pipe(!dev && sourcemaps.init() || gutil.noop())
+    return merge(
+            gulp.src("src/content/weh-ct.js"),
+            gulp.src("src/content/weh-ct-react.jsx")
+                .pipe(babel({
+                    presets: [react]
+                }))
+            )
+        .pipe(concat("weh-ct.js"))
+        .pipe(babel({
+            presets: [es2015]
+        }))
         .pipe(!dev && uglify() || gutil.noop())
-        .pipe(!dev && sourcemaps.write('./maps') || gutil.noop())
-        .pipe(gulp.dest(path.join(buildDir,"content")));
-});
-
-gulp.task("weh-content-jsx-scripts",function() {
-    return browserify({entries: "src/content/weh-ct-react.jsx", debug: dev})
-        .transform("babelify", { presets: [es2015,react] })
-        .bundle()
-        .pipe(source('weh-ct-react.js'))
-        .pipe(buffer())
-        .pipe(!dev && sourcemaps.init() || gutil.noop())
-        .pipe(!dev && uglify() || gutil.noop())
-        .pipe(!dev && sourcemaps.write('./maps') || gutil.noop())
         .pipe(gulp.dest(path.join(buildDir,"content")));
 });
 
@@ -145,7 +134,6 @@ gulp.task("clean",function() {
 gulp.task("build-weh",[
     "weh-background-scripts",
     "weh-content-scripts",
-    "weh-content-jsx-scripts",
 ]);
 
 gulp.task("build-prj",[
@@ -198,8 +186,7 @@ gulp.task("build",[
 
 gulp.task("watch-weh",function() {
     gulp.watch("src/background/*.js", ["weh-background-scripts"]);
-    gulp.watch("src/content/*.js", ["weh-content-scripts"]);
-    gulp.watch("src/content/*.jsx", ["weh-content-jsx-scripts"]);
+    gulp.watch(["src/content/*.js","src/content/*.jsx"], ["weh-content-scripts"]);
 });
 
 function Watch(files,tasks) {

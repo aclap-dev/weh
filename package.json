@@ -1,44 +1,51 @@
 {
-    "version": "1.0.0-alpha.1"
-    , "description": "Tool for developing WebExtensions add-ons on Firefox, Chrome, Edge and Opera, using ReactJS for the UI"
-    , "keywords": ["webextensions","add-on","chrome","firefox","opera","edge","reactjs"]
-    , "homepage": "https://github.com/mi-g/weh"
-    , "bugs": {
-        "url": "https://github.com/mi-g/weh/issues"
-    }
-    , "license": {
-        "license": " MPL-2.0"
-    }
-    , "author": {
-        "name": "Michel Gutierrez"
-        , "email": "michel.gutierrez@gmail.com"
-        , "url": "https://github.com/mi-g"
-    }
-    , "files": [
-        "gulpfile.js",
-        "src",
-        "templates"
-    ]
-    , "devDependencies": {
-        "babel-preset-es2015": "^6.18.0"
-        , "babel-preset-react": "^6.16.0"
-        , "babelify": "^7.3.0"
-        , "bootstrap": "^3.3.7"
-        , "browserify": "^13.1.1"
-        , "del": "^2.2.2"
-        , "gulp": "^3.9.1"
-        , "gulp-babel": "^6.1.2"
-        , "gulp-rename": "^1.2.2"
-        , "gulp-sass": "^2.3.2"
-        , "gulp-sourcemaps": "^2.2.0"
-        , "gulp-uglify": "^2.0.0"
-        , "gulp-util": "^3.0.7"
-        , "merge-stream": "^1.0.0"
-        , "react": "^15.3.2"
-        , "react-dom": "^15.3.2"
-        , "run-sequence": "^1.2.2"
-        , "vinyl-buffer": "^1.0.0"
-        , "vinyl-source-stream": "^1.1.0"
-        , "yargs": "^6.3.0"
-    }
+  "version": "1.0.0-alpha.1",
+  "description": "Tool for developing WebExtensions add-ons on Firefox, Chrome, Edge and Opera, using ReactJS for the UI",
+  "keywords": [
+    "webextensions",
+    "add-on",
+    "chrome",
+    "firefox",
+    "opera",
+    "edge",
+    "reactjs"
+  ],
+  "homepage": "https://github.com/mi-g/weh",
+  "bugs": {
+    "url": "https://github.com/mi-g/weh/issues"
+  },
+  "license": {
+    "license": " MPL-2.0"
+  },
+  "author": {
+    "name": "Michel Gutierrez",
+    "email": "michel.gutierrez@gmail.com",
+    "url": "https://github.com/mi-g"
+  },
+  "files": [
+    "gulpfile.js",
+    "src",
+    "templates"
+  ],
+  "devDependencies": {
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "bootstrap": "^3.3.7",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^2.2.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "merge-stream": "^1.0.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "run-sequence": "^1.2.2",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "yargs": "^6.3.0"
+  }
 }

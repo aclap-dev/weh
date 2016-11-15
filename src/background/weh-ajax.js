@@ -1,5 +1,5 @@
 
-module.exports = function(options) {
+weh.ajax = function(options) {
     
     const JSON_RE = new RegExp("\\bjson\\b");
     
