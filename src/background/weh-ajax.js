@@ -1,8 +1,5 @@
 
-if(typeof wef === "undefined")
-    wef = {};
-
-wef.ajax = function(options) {
+module.exports = function(options) {
     
     const JSON_RE = new RegExp("\\bjson\\b");
     

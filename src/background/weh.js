@@ -7,9 +7,7 @@
     window.weh = weh;
     weh.prefs = require("./weh-prefs.js");
     weh.ui = require("./weh-ui.js");
-    /*
     weh.ajax = require("./weh-ajax.js");
-    */
     
 })(this || window);
 
