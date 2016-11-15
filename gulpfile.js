@@ -236,7 +236,7 @@ gulp.task("default", function(callback) {
 
 gulp.task("copy-template",function(callback) {
     fs.access(prjDir,fs.F_OK,function(err) {
-        if(!err)
+        if(!err && !argv.force)
             return callback(new Error(prjDir+" already exists"));
         gulp.src("templates/"+template+"/**/*")
             .pipe(gulp.dest(prjDir))
@@ -268,7 +268,8 @@ gulp.task("help", function() {
         "  --no-watch! do generate builds dynamically",
         "  --watch-weh! generate builds dynamically when weh source is modified",
         "  --no-react: do not include ReactJS vendor library",
-        "  --no-bootstrap: do not include Bootstrap vendor library"
+        "  --no-bootstrap: do not include Bootstrap vendor library",
+        "  --force: force overwrite output directory"
     ];
     console.log(help.join("\n"));
     process.exit(0);
