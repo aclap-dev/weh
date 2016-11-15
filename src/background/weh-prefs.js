@@ -33,7 +33,6 @@ Prefs.prototype = {
                 throw new Error("Forbidden prefs key "+spec.name);
 
             var localeName = spec.name.replace(/[^0-9a-zA-Z_]/g,'_');
-            console.info("localeName","weh_prefs_label_"+localeName);
             spec.label = spec.label || weh._("weh_prefs_label_"+localeName) || spec.name;
             spec.description = spec.description || weh._("weh_prefs_description_"+localeName) || "";
 
