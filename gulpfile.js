@@ -139,7 +139,7 @@ Task("prj-locales",function(src,cb) {
 });
 
 gulp.task("clean",function() {
-    return del([buildDir+"/*"]);
+    return del([buildDir+"/*"],{force:true});
 });
 
 gulp.task("build-weh",[
