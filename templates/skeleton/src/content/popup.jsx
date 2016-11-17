@@ -1,11 +1,11 @@
 
 class Link extends React.Component {
-    
+
     constructor(props) {
         super(props);
         this.handleClick = this.handleClick.bind(this);
     }
-    
+
     handleClick() {
         weh.post({
             type: this.props.messageType

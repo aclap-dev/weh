@@ -7,7 +7,6 @@
     , "author": "Michel Gutierrez"
     , "background": {
         "scripts": [
-            "background/weh-bg.js",
             "background/default-prefs.js",
             "background/main.js"
         ]
@@ -24,7 +23,7 @@
             "40": "content/images/icon-40.png"
         }
         , "default_title": "WebExtensions Helper"
-        , "default_popup": "content/panel.html"
+        , "default_popup": "content/popup.html"
     }
     , "options_page": "content/settings.html?panel=settings"
 }

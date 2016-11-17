@@ -34,11 +34,16 @@
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
+    "gulp-clean-css": "^2.0.13",
     "gulp-concat": "^2.6.1",
+    "gulp-debug": "^3.0.0",
+    "gulp-header": "^1.8.8",
     "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
     "gulp-sass": "^2.3.2",
     "gulp-sourcemaps": "^2.2.0",
     "gulp-uglify": "^2.0.0",
+    "gulp-useref": "^3.1.2",
     "gulp-util": "^3.0.7",
     "merge-stream": "^1.0.0",
     "react": "^15.3.2",
@@ -47,5 +52,6 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "yargs": "^6.3.0"
-  }
+  },
+  "dependencies": {}
 }

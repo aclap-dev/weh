@@ -1,0 +1,10 @@
+/*
+ * <%= manifest.name %> <%= manifest.description && (" - "+manifest.description) || "" %>
+ * @version <%= manifest.version %><% if(manifest.homepage_url) { %>
+ * @link <%= manifest.homepage_url %><% } 
+   if(manifest.author) { %>
+ * @author: <%= manifest.author %><% } 
+   if(manifest.license) { %>
+ * @license <%= manifest.license %><% } %>
+ */
+ 

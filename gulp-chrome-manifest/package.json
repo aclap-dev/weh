@@ -1,0 +1,44 @@
+{
+  "name": "gulp-chrome-manifest",
+  "version": "0.0.13",
+  "description": "The gulp plug-in manages name/value in manifest of Chrome Apps or Extensions.",
+  "homepage": "https://github.com/ragingwind/gulp-chrome-manifest",
+  "author": {
+    "name": "ragingwind",
+    "email": "ragingwind@gmail.com",
+    "url": "http://ragingwind.me"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "repository": "ragingwind/gulp-chrome-manifest",
+  "license": "MIT",
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "gulp-chrome-manifest",
+    "gulp",
+    "gulp plugin",
+    "chrome",
+    "chrome manifest"
+  ],
+  "dependencies": {
+    "chrome-manifest": "^0.2.4",
+    "gulp-util": "^3.0.6",
+    "through2": "^2.0.0"
+  },
+  "devDependencies": {
+    "ava": "^0.11.0",
+    "xo": "^0.12.1"
+  },
+  "scripts": {
+    "test": "xo && ava"
+  },
+  "xo": {
+    "envs": [
+      "node",
+      "mocha"
+    ]
+  }
+}

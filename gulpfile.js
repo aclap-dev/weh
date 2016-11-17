@@ -1,130 +1,149 @@
 const gulp = require("gulp");
 const gutil = require("gulp-util");
 const babel = require('gulp-babel');
-const source = require('vinyl-source-stream');
-const buffer = require('vinyl-buffer');
-const sourcemaps = require('gulp-sourcemaps');
 const uglify = require('gulp-uglify');
 const del = require("del");
 const sass = require('gulp-sass');
-const rename = require('gulp-rename');
 const concat = require("gulp-concat");
+const replace = require('gulp-replace');
+const gulpif = require('gulp-if');
+const debug = require('gulp-debug');
+const cleanCSS = require('gulp-clean-css');
+const header = require("gulp-header");
+const manifest = require('./gulp-chrome-manifest');
+const userefWeh = require("./gulp-useref-weh");
 const runSequence = require('run-sequence');
-const merge = require('merge-stream');
 const es2015 = require('babel-preset-es2015');
 const react = require('babel-preset-react');
 
 const fs = require("fs");
 const argv = require('yargs').argv;
 const path = require("path");
+const glob = require("glob");
 
 var dev = !!argv.dev;
 var prjDir = argv.prjdir || 'tmp/trash-prj';
 var buildDir = path.join(prjDir,argv.builddir || "build");
 var template = argv.template || "skeleton";
 
-var featDirs = ["src"];
-if(argv.features)
-    featDirs = featDirs.concat(argv.features.split(",").map(function(feature) {
-        return "src-"+feature;
-    }));
+var wehBackgroundModules = ["core","prefs","ui","ajax"];
 
-gulp.task("weh-background-scripts",function() {
-    return gulp.src(["core","prefs","ui","ajax"].map(function(module) {
-            return "src/background/weh-"+module+".js";
-        }))
-        .pipe(concat("weh-bg.js"))
-        .pipe(babel({
-            presets: [es2015]
-        }))
-        .pipe(!dev && uglify() || gutil.noop())
-        .pipe(gulp.dest(path.join(buildDir,"background")));
-});
+var jsBanner = null, jsBannerData;
 
-gulp.task("weh-content-scripts",function() {
-    return merge(
-            gulp.src("src/content/weh-ct.js"),
-            gulp.src("src/content/weh-ct-react.jsx")
-                .pipe(babel({
-                    presets: [react]
-                }))
-            )
-        .pipe(concat("weh-ct.js"))
-        .pipe(babel({
-            presets: [es2015]
+if(argv.jsheader || (!dev && argv.jsheader!==false)) {
+    try {
+        jsBannerData = {
+            manifest: require(path.join(prjDir,"src/manifest.json"))
+        }
+        try {
+            jsBanner = fs.readFileSync(path.join(prjDir,"etc/jsbanner.txt"),"utf8");
+        } catch(e) {
+            jsBanner = fs.readFileSync("etc/jsbanner.txt","utf8");
+        }
+    } catch(e) {}
+}
+
+gulp.task("prj-content",function(cb) {
+
+    var staticSrc = [path.join(prjDir,"src/content/**/*.{js,css}")];
+    if(argv.weh!==false)
+        staticSrc.push("src/content/**/*.{js,css}");
+    if(argv.react!==false) {
+        staticSrc.push("node_modules/react/dist/**/*.{js,css}");
+        staticSrc.push("node_modules/react-dom/dist/**/*.{js,css}");
+    }
+    if(argv.bootstrap!==false)
+        staticSrc.push("node_modules/bootstrap/dist/css/*.css");
+
+    function AddScripts(org,match) {
+        var scripts = [];
+        function AddVendorScripts() {
+            if(argv.react!==false) {
+                scripts.push("<script src=\"react.js\"><script>");
+                scripts.push("<script src=\"react-dom.js\"><script>");
+            }
+        }
+        function AddWehScripts() {
+            if(argv.weh!==false) {
+                scripts.push("<script src=\"weh-ct.js\"></script>");
+                if(argv["weh-prefs"]!==false)
+                    scripts.push("<script src=\"weh-ct-react.jsx\"><script>");
+            }
+        }
+        match.split().map(function(term) {
+            return term.trim();
+        }).forEach(function(term) {
+            switch(term) {
+                case "weh-all":
+                    AddVendorScripts();
+                    AddWehScripts();
+                    break;
+                case "weh":
+                    AddWehScripts();
+                    break;
+            }
+        });
+        return scripts.join("\n");
+    }
+
+    return gulp.src(path.join(prjDir,"src/content/**/*.html"))
+        .pipe(replace(/<\!--\s*weh:js\s*(.*?)\s*-->/g,AddScripts))
+        .pipe(userefWeh([{
+            src: staticSrc,
+        },{
+            src: [path.join(prjDir,"src/content/**/*.jsx"),"src/content/**/*.jsx"],
+            stream: function(fileName) {
+                return gulp.src(fileName)
+                    .pipe(babel({
+                        presets: [es2015,react]
+                    }));
+            }
+        },{
+            src: [path.join(prjDir,"src/content/**/*.scss")],
+            stream: function(fileName) {
+                return gulp.src(fileName)
+                    .pipe(sass().on('error', sass.logError));
+            }
+        }],{
+            noconcat: dev
         }))
-        .pipe(!dev && uglify() || gutil.noop())
+        .pipe(gulpif(!dev,gulpif('*.js', uglify())))
+        .pipe(gulpif(!!jsBanner,gulpif('*.js',header(jsBanner,jsBannerData))))
+        .pipe(gulpif(!dev,gulpif('*.css',cleanCSS({compatibility: 'ie8'}))))
         .pipe(gulp.dest(path.join(buildDir,"content")));
 });
 
-function Task(task,taskFn) {
-    gulp.task(task,function(cb) {
-        var index = 0;
-        function Next(cb) {
-            taskFn(featDirs[index],function() {
-                index++;
-                if(index<featDirs.length)
-                    Next(cb);
-                else
-                    cb(null);
-            });
-        }
-        Next(cb);
-    });
-}
-
-Task("prj-background-scripts",function(src,cb) {
-    return gulp.src(path.join(prjDir,src+"/background/**/*.js"))
-        .pipe(babel({
-            presets: [es2015]
-        }))
-        .pipe(gulp.dest(path.join(buildDir,"background")))
-        .on("end",cb);
+gulp.task("prj-content-assets",function() {
+    return gulp.src([path.join(prjDir,"src/content/assets/**/*")])
+        .pipe(gulp.dest(path.join(buildDir,"content")));
 });
 
-Task("prj-content-scripts",function(src,cb) {
-    return gulp.src(path.join(prjDir,src+"/content/**/*.js"))
-        .pipe(babel({
-            presets: [es2015]
-        }))
-        .pipe(gulp.dest(path.join(buildDir,"content")))
-        .on("end",cb);
-});
 
-Task("prj-content-jsx-scripts",function(src,cb) {
-    return gulp.src(path.join(prjDir,src+"/content/**/*.jsx"))
-        .pipe(babel({
-            presets: [es2015,react]
-        }))
-        .pipe(gulp.dest(path.join(buildDir,"content")))
-        .on("end",cb);
-});
-
-Task("prj-content-scss",function(src,cb) {
-    return gulp.src(path.join(prjDir,src+"/content/**/*.scss"))
-        .pipe(sass().on('error', sass.logError))
-        .pipe(gulp.dest(path.join(buildDir,"content")))
-        .on("end",cb);
-});
-
-Task("prj-content-assets",function(src,cb) {
-    return gulp.src([path.join(prjDir,src+"/content/assets/**/*"),
-                     path.join(prjDir,src+"/content/*.{html,css}")])
-        .pipe(gulp.dest(path.join(buildDir,"content")))
-        .on("end",cb);
-});
-
-Task("prj-assets",function(src,cb) {
-    return gulp.src([path.join(prjDir,src+"/manifest.json"),
-                     path.join(prjDir,src+"/assets/**/*")])
+gulp.task("prj-assets",function() {
+    return gulp.src(path.join(prjDir,"src/assets/**/*"))
         .pipe(gulp.dest(buildDir))
-        .on("end",cb);
 });
 
-Task("prj-locales",function(src,cb) {
-    return gulp.src(path.join(prjDir,src+"/locales/**/*"))
-        .pipe(gulp.dest(path.join(buildDir,"_locales")))
-        .on("end",cb);
+gulp.task("prj-manifest",function() {
+    return gulp.src(path.join(prjDir,"src/manifest.json"))
+        .pipe(manifest({
+            background: {
+                target: 'background/background.js',
+                initialScripts: wehBackgroundModules.map(function(module) {
+                    return "background/weh-"+module+".js";
+                }),
+                searchPath: [path.resolve("src")],
+                noconcat: dev
+            }
+        }))
+        .pipe(gulpif(!dev,gulpif('*.js', uglify())))
+        .pipe(gulpif(!!jsBanner,gulpif('*.js',header(jsBanner,jsBannerData))))
+        .pipe(gulp.dest(buildDir));
+});
+
+gulp.task("prj-locales",function() {
+    return gulp.src(path.join(prjDir,"src/locales/**/*"))
+        .pipe(gulp.dest(path.join(buildDir,"_locales")));
 });
 
 gulp.task("clean",function() {
@@ -136,79 +155,20 @@ gulp.task("build-weh",[
     "weh-content-scripts",
 ]);
 
-gulp.task("build-prj",[
-    "prj-background-scripts",
-    "prj-content-scripts",
-    "prj-content-jsx-scripts",
-    "prj-content-scss",
+gulp.task("build",[
+    "prj-manifest",
+    "prj-content",
     "prj-content-assets",
     "prj-assets",
     "prj-locales"
 ]);
 
-gulp.task("vendor-react",function(callback) {
-    if(argv.react===false)
-        return callback(null);
-    var reactDir = "node_modules/react/dist";
-    var reactDomDir = "node_modules/react-dom/dist";
-    
-    return merge(
-        gulp.src(dev ? "react.js" : "react.min.js",{base: reactDir, cwd: reactDir})
-            .pipe(rename("react.js"))
-            .pipe(gulp.dest(path.join(buildDir,"content","vendor"))),
-        gulp.src(dev ? "react-dom.js" : "react-dom.min.js",{base: reactDomDir, cwd: reactDomDir})
-            .pipe(rename("react-dom.js"))
-            .pipe(gulp.dest(path.join(buildDir,"content","vendor")))
-    );
-});
-
-gulp.task("vendor-bootstrap",function(callback) {
-    if(argv.bootstrap===false)
-        return callback(null);
-    var dir = "node_modules/bootstrap/dist/css";
-
-    return gulp.src(dev ? "bootstrap.css" : "bootstrap.min.css",{base: dir, cwd: dir})
-        .pipe(rename("bootstrap.css"))
-        .pipe(gulp.dest(path.join(buildDir,"content","vendor")));
-
-});
-
-gulp.task("build-vendor",[
-    "vendor-react",
-    "vendor-bootstrap"
-]);
-
-gulp.task("build",[
-    "build-weh",
-    "build-prj",
-    "build-vendor"
-]);
-
 gulp.task("watch-weh",function() {
-    gulp.watch("src/background/*.js", ["weh-background-scripts"]);
-    gulp.watch(["src/content/*.js","src/content/*.jsx"], ["weh-content-scripts"]);
+    gulp.watch(["src/background/**/*.js","src/content/*.js","src/content/*.jsx"], ["build"]);
 });
-
-function Watch(files,tasks) {
-    var watched = [];
-    if(!Array.isArray(files))
-        files = [files];
-    featDirs.forEach(function(src) {
-        watched = watched.concat(files.map(function(file) {
-            return path.join(prjDir,src+"/"+file);
-        }));
-    });
-    gulp.watch(watched,tasks);
-}
 
 gulp.task("watch-prj",function() {
-    Watch("background/**/*.js", ["prj-background-scripts"]);
-    Watch("content/**/*.js", ["prj-content-scripts"]);
-    Watch("content/**/*.jsx", ["prj-content-jsx-scripts"]);
-    Watch("content/**/*.scss", ["prj-content-scss"]);
-    Watch(["content/assets/**/*","content/*.{html,css}"], ["prj-content-assets"]);
-    Watch(["manifest.json","assets/**/*"], ["prj-assets"]);
-    Watch("locales/**/*", ["prj-locales"]);
+    gulp.watch(["src/background/**/*.js","content/**/*"], ["build"]);
 });
 
 gulp.task("default", function(callback) {
@@ -224,13 +184,14 @@ gulp.task("default", function(callback) {
 });
 
 gulp.task("copy-template",function(callback) {
-    fs.access(prjDir,fs.F_OK,function(err) {
-        if(!err && !argv.force)
+    try {
+        fs.accessSync(prjDir,fs.F_OK);
+        if(!force)
             return callback(new Error(prjDir+" already exists"));
-        gulp.src("templates/"+template+"/**/*")
-            .pipe(gulp.dest(prjDir))
-            .on("end",callback);
-    });
+    } catch(e) {}
+    gulp.src("templates/"+template+"/**/*")
+        .pipe(gulp.dest(prjDir))
+        .on("end",callback);
 });
 
 gulp.task("init", function(callback) {
@@ -253,12 +214,12 @@ gulp.task("help", function() {
         "  --prjdir <dir>: project directory (required for most commands)",
         "  --dev: addon generated for development",
         "  --template <template>: template to be used when creating a new project",
-        "  --features <feature1,...>: comma separated list of feature to amend add-on",
         "  --no-watch! do generate builds dynamically",
         "  --watch-weh! generate builds dynamically when weh source is modified",
         "  --no-react: do not include ReactJS vendor library",
         "  --no-bootstrap: do not include Bootstrap vendor library",
-        "  --force: force overwrite output directory"
+        "  --force: force overwrite output directory",
+        "  --jsheader/--no-jsheader: force JS headers on dev builds/disable JS headers on non-dev builds"
     ];
     console.log(help.join("\n"));
     process.exit(0);
