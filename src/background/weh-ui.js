@@ -214,7 +214,7 @@ weh.ui = (function() {
                                 if(currentWindow.id!=window.id)
                                     try {
                                     browser.windows.remove(window.id,function() {});
-                                    } catch(e) { alert(e); }
+                                    } catch(e) { }
                             });
                         }
                         function OnRemoved(removedWindowId) {
