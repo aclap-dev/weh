@@ -1,3 +1,15 @@
+/*
+ * gulp-useref-weh
+ *
+ * @summary an integration of useref into gulp, solves some gulp-useref issues
+ * @author Michel Gutierrez
+ * @link https://github.com/mi-g/weh
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 const useref = require("useref");
 const es = require('event-stream');
 const through = require('through2');
