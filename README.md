@@ -2,10 +2,10 @@
 
 **weh** stands for *WebExtensions Helper*.
 
-This is a tool that speeds up browser add-ons development by providing a workflow that generates automatically a build extension directory
-that you can directly install into your browser.
+This tool speeds up browser add-ons development by providing a workflow that generates automatically a build extension directory
+you can directly install into your browser.
 
-**weh** also provides source code that goes into your addon to make easier a number of common tasks like managing preferences and two-way communications between the extension background and its user interface content pages. Developing the user interface using ReactJS is simplified but you may choose 
+**weh** also provides source code that goes into your addon to ease a number of common tasks like managing preferences and two-way communications between the extension background and its user interface content pages. Developing the user interface using ReactJS is simplified but you may choose 
 not to use this library.
 
 **weh**-generated extensions are compatible with Firefox, Chrome, Opera and Edge. You should of course maintain this compatibility in the code you add to your project.
@@ -66,38 +66,45 @@ same *.js* or ".css* file name into both `src/content` and `src/content/assets` 
 
 ## using weh libraries
 
-In order to make *weh* background libraries available to your add-on, add `background/weh-bg.js` into the background scripts of `manifest.json`.
-For instance:
+You don't need to do anything special to make *weh* background libraries available to your add-on. Just declare your own modules in  `manifest.json`:
 
 ```
    "background": {
         "scripts": [
-            "background/weh-bg.js",
             "background/main.js"
         ]
     }
 ```
+
+When the add-on is built, *weh* background modules will be added automatically. If the `--dev` option is not provided, *weh* and custom files
+will be concatenated and minified.
 
 For content files, you must load a number of scripts and styles into your HTML files. For instance:
 ```
 <!DOCTYPE html>
 <html>
     <head>
+        <!-- build:css settings.css -->
         <link href="vendor/bootstrap.css" type="text/css" rel="stylesheet">
         <link href="myextension-ui.css" type="text/css" rel="stylesheet">
+        <!-- endbuild -->
     </head>
     <body class="container-fluid">
         <div id="root"></div>
-        <script src="vendor/react.js"></script>
-        <script src="vendor/react-dom.js"></script>
-        <script src="weh-ct.js"></script>
-        <script src="weh-ct-react.js"></script>
+        <!-- build:js vendor-bundle.js -->
+        <!-- weh:js weh-all -->
+        <!-- endbuild -->
+
+        <!-- build:js myextension-ui.min.js -->
         <script src="myextension-ui.js"></script>
+        <!-- endbuild -->
     </body>
 </html>
 ```
 
-Note that you do not have to provide vendor libraries *ReactJS* and *Bootstrap* as they are automatically installed by *weh* (unless you specify not to with command line arguments `--no-react` and `--no-bootstrap`)
+When the extension is built, `<!-- weh:js weh-all -->` is first replaced by weh scripts inclusion. Then, the sections between
+`<!-- build:type file -->` and `<!-- endbuild -->` are processed to be concatenated into a single file (per section) and minified
+unless you specify the `--dev` for development mode.
 
 ### weh preferences
 
@@ -177,16 +184,22 @@ From the content side, you should create an HTML file in your source code to rep
 <!DOCTYPE html>
 <html>
     <head>
-        <link href="vendor/bootstrap.css" type="text/css" rel="stylesheet">
-        <link href="styles.css" type="text/css" rel="stylesheet">
+        <!-- build:css settings.css -->
+		<link href="bootstrap.css" type="text/css" rel="stylesheet">
+		<link href="styles.css" type="text/css" rel="stylesheet">
+        <!-- endbuild -->
     </head>
     <body class="container-fluid">
         <div id="root"></div>
-        <script src="vendor/react.js"></script>
-        <script src="vendor/react-dom.js"></script>
-        <script src="weh-ct.js"></script>
-        <script src="weh-ct-react.js"></script>
-        <script src="settings.js"></script>
+
+        <!-- build:js vendor-bundle.js -->
+        <!-- weh:js weh-all -->
+        <!-- endbuild -->
+
+        <!-- build:js settings-bundle.js -->
+        <script src="settings.jsx"></script>
+        <!-- endbuild -->
+
     </body>
 </html>
 ```
