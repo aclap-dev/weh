@@ -71,15 +71,15 @@ gulp.task("prj-content",function(cb) {
         var scripts = [];
         function AddVendorScripts() {
             if(argv.react!==false) {
-                scripts.push("<script src=\"react.js\"><script>");
-                scripts.push("<script src=\"react-dom.js\"><script>");
+                scripts.push("<script src=\"react.js\"></script>");
+                scripts.push("<script src=\"react-dom.js\"></script>");
             }
         }
         function AddWehScripts() {
             if(argv.weh!==false) {
                 scripts.push("<script src=\"weh-ct.js\"></script>");
                 if(argv["weh-prefs"]!==false)
-                    scripts.push("<script src=\"weh-ct-react.jsx\"><script>");
+                    scripts.push("<script src=\"weh-ct-react.jsx\"></script>");
             }
         }
         match.split().map(function(term) {
@@ -117,7 +117,11 @@ gulp.task("prj-content",function(cb) {
                     .pipe(sass().on('error', sass.logError));
             }
         }],{
-            noconcat: dev
+            noconcat: dev,
+            changeExt: {
+                "jsx": "js",
+                "scss": "css"
+            }
         }))
         .pipe(gulpif(!dev,gulpif('*.js', uglify())))
         .pipe(gulpif(!!jsBanner,gulpif('*.js',header(jsBanner,jsBannerData))))
