@@ -143,8 +143,11 @@ class WehParams extends React.Component {
             case "weh#updated-prefs-specs":
                 var newSpecs = Object.assign({},weh.prefSpecs);
                 var prefs = {};
-                for(var k in newSpecs)
+                for(var k in newSpecs) {
                     prefs[k] = 1;
+                    delete this.invalid[k];
+                    this.values[k] = this.originalValues[k];
+                }
                 this.specs = newSpecs;
                 weh.postLocal({
                     type: "weh#reload-prefs",
@@ -155,8 +158,11 @@ class WehParams extends React.Component {
                 this.originalValues = Object.assign({},weh.prefs);
                 var newPrefs = Object.assign({},weh.prefs);
                 var prefs = {};
-                for(var k in newPrefs)
+                for(var k in newPrefs) {
                     prefs[k] = 1;
+                    delete this.invalid[k];
+                    this.values[k] = this.originalValues[k];
+                }
                 this.values = newPrefs;
                 weh.postLocal({
                     type: "weh#reload-prefs",
