@@ -176,11 +176,11 @@ gulp.task("build",[
 ]);
 
 gulp.task("watch-weh",function() {
-    gulp.watch(["src/background/**/*.js","src/content/*.js","src/content/*.jsx"], ["build"]);
+    gulp.watch(["src/background/*.js","src/content/*.js","src/content/*.jsx"], ["build"]);
 });
 
 gulp.task("watch-prj",function() {
-    gulp.watch(["src/background/**/*.js","content/**/*"], ["build"]);
+    gulp.watch(path.join(prjDir,"src/**/*"), ["build"]);
 });
 
 gulp.task("default", function(callback) {
