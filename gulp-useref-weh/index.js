@@ -10,7 +10,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const useref = require("useref");
+const useref = require("./useref");
 const es = require('event-stream');
 const through = require('through2');
 const minimatch = require("minimatch");
@@ -71,7 +71,8 @@ module.exports = function () {
 
         var self = this;
         var output = useref(file.contents.toString(),{
-            noconcat: !!options.noconcat
+            noconcat: !!options.noconcat,
+            changeExt: options.changeExt
         });
         var outputHTML = output[0];
         var allAssets = output[1];
