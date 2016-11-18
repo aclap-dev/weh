@@ -48,7 +48,6 @@
     }
     
     port.onMessage.addListener(function(message) {
-        console.info("weh received",message);
         switch(message.type) {
             case "weh#close":
                 window.close();
@@ -97,7 +96,6 @@
         prefs: {},
         prefSpecs: {},
         post: function(message) {
-            console.info("posting",message,"to",port.name);
             port.postMessage(message);
         },
         postLocal: function(message) {
