@@ -56,13 +56,19 @@ weh.ui = (function() {
         
 		if(!panel)
             panel = panels[panelName] = {
+                name: panelName,
                 options: UpdateOptions({}),
             }
         panel.open = true;
 
 		panel.post = function(message) {
-            if(panel.open)
-                port.postMessage(message);
+            try {
+                if(panel.open)
+                    port.postMessage(message);
+            } catch(e) {
+                /* Edge bug: port disconnect event not sent on panel closed */
+                panel.open = false;
+            }
 		}
 
 		port.onMessage.addListener(function(message) {
@@ -136,7 +142,6 @@ weh.ui = (function() {
 	});
     
     weh.prefs.on("",function(pref,value) {
-        console.info("ui prefs change",pref,value);
         for(var k in panels) {
             var panel = panels[k];
             if(panel.open) {
@@ -178,6 +183,7 @@ weh.ui = (function() {
 
         update: function(panelName,options) {
             var panel = panels[panelName] || {
+                name: panelName,
                 open: false,
                 options: options,
             }
@@ -197,8 +203,6 @@ weh.ui = (function() {
                     var cwcParam = {
                         url: browser.extension.getURL(panel.options.contentURL+"?panel="+panelName+"&addon="+browser.runtime.id),
                         type: "detached_panel",
-                        //width: width,
-                        //height: 100,
                         left: Math.round((currentWindow.width-width)/2+currentWindow.left),
                         top: currentWindow.top,
                     };
