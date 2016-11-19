@@ -106,7 +106,7 @@ module.exports = function () {
                             cb();
                             Done();
                         }));
-                }).(oName);
+                })(oName);
         }
 
         var appBasePath = path.dirname(file.path);
