@@ -164,7 +164,6 @@ weh.ui = (function() {
                 params[terms[0]] = decodeURIComponent(terms[1]);
             });
         params["panel"] = panelName;
-        params["addon"] = browser.runtime.id;
         var paramExprs = [];
         for(var param in params)
             paramExprs.push(param + "=" + encodeURIComponent(params[param]));
@@ -201,7 +200,7 @@ weh.ui = (function() {
                 browser.windows.getCurrent(function(currentWindow) {
                     var width = 500;
                     var cwcParam = {
-                        url: browser.extension.getURL(panel.options.contentURL+"?panel="+panelName+"&addon="+browser.runtime.id),
+                        url: browser.extension.getURL(panel.options.contentURL+"?panel="+panelName),
                         type: "detached_panel",
                         left: Math.round((currentWindow.width-width)/2+currentWindow.left),
                         top: currentWindow.top,
@@ -232,7 +231,7 @@ weh.ui = (function() {
                     });
                 });
             else if(panel.options.type=="tab") {
-                var url = browser.extension.getURL(panel.options.contentURL+"?panel="+panelName+"&addon="+browser.runtime.id);
+                var url = browser.extension.getURL(panel.options.contentURL+"?panel="+panelName);
                 GotoTab(url,function(foundTab) {
                     if(!foundTab)
                         browser.tabs.create({
