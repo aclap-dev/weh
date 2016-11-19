@@ -38,7 +38,7 @@ var prjDir = argv.prjdir || 'tmp/trash-prj';
 var buildDir = path.join(prjDir,argv.builddir || "build");
 var template = argv.template || "skeleton";
 
-var wehBackgroundModules = ["core","prefs","ui","ajax"];
+var wehBackgroundModules = ["core","inspect","prefs","ui","ajax"];
 
 var jsBanner = null, jsBannerData;
 
@@ -58,18 +58,16 @@ if(argv.jsheader || (!dev && argv.jsheader!==false)) {
 gulp.task("prj-content",function(cb) {
 
     var staticSrc = [path.join(prjDir,"src/content/**/*.{js,css}")];
-    if(argv.weh!==false)
-        staticSrc.push("src/content/**/*.{js,css}");
-    if(argv.react!==false) {
-        staticSrc.push("node_modules/react/dist/**/*.{js,css}");
-        staticSrc.push("node_modules/react-dom/dist/**/*.{js,css}");
-    }
-    if(argv.bootstrap!==false)
-        staticSrc.push("node_modules/bootstrap/dist/css/*.css");
+    staticSrc.push("src/content/**/*.{js,css}");
+    staticSrc.push("node_modules/react/dist/**/*.{js,css}");
+    staticSrc.push("node_modules/react-dom/dist/**/*.{js,css}");
+    staticSrc.push("node_modules/bootstrap/dist/css/*.css");
+    staticSrc.push("node_modules/bootstrap/dist/js/*.js");
+    staticSrc.push("node_modules/jquery/dist/**/*.js");
 
     function AddScripts(org,match) {
         var scripts = [];
-        function AddVendorScripts() {
+        function AddReactScripts() {
             if(argv.react!==false) {
                 scripts.push("<script src=\"react.js\"></script>");
                 scripts.push("<script src=\"react-dom.js\"></script>");
@@ -82,12 +80,18 @@ gulp.task("prj-content",function(cb) {
                     scripts.push("<script src=\"weh-ct-react.jsx\"></script>");
             }
         }
-        match.split().map(function(term) {
+        match.split(",").map(function(term) {
             return term.trim();
         }).forEach(function(term) {
             switch(term) {
+                case "jquery":
+                    scripts.push("<script src=\"jquery.js\"></script>");
+                    break;
+                case "bootstrap":
+                    scripts.push("<script src=\"bootstrap.js\"></script>");
+                    break;
                 case "weh-all":
-                    AddVendorScripts();
+                    AddReactScripts();
                     AddWehScripts();
                     break;
                 case "weh":
