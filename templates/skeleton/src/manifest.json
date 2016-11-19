@@ -26,4 +26,7 @@
         , "default_popup": "content/popup.html"
     }
     , "options_page": "content/settings.html?panel=settings"
+    , "permissions": [
+        "tabs"
+    ]
 }
