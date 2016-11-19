@@ -294,4 +294,4 @@ class MyComponent extends React.Component {
 }
 ```
 
-*weh* takes care of adding/removing the listener when the component is mounted/unmounted and delivering the message to the `wehRectAttach` method.
+*weh* takes care of adding/removing the listener when the component is mounted/unmounted and delivering the message to the `onWehMessage` method.
