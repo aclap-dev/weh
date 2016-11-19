@@ -114,7 +114,7 @@ gulp.task("prj-content",function(cb) {
             src: [path.join(prjDir,"src/content/**/*.scss")],
             stream: function(fileName) {
                 return gulp.src(fileName)
-                    .pipe(sass().on('error', sass.logError));
+                    .pipe(sass());
             }
         }],{
             noconcat: dev,
@@ -123,6 +123,13 @@ gulp.task("prj-content",function(cb) {
                 "scss": "css"
             }
         }))
+        .on("error",function(err) {
+            console.log('[Compilation Error]');
+            console.log(err.fileName + ( err.loc ? `( ${err.loc.line}, ${err.loc.column} ): ` : ': '));
+            console.log('error Babel: ' + err.message + '\n');
+            console.log(err.codeFrame);
+            this.emit("end");
+        })
         .pipe(gulpif(!dev,gulpif('*.js', uglify())))
         .pipe(gulpif(!!jsBanner,gulpif('*.js',header(jsBanner,jsBannerData))))
         .pipe(gulpif(!dev,gulpif('*.css',cleanCSS({compatibility: 'ie8'}))))

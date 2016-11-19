@@ -77,6 +77,7 @@ module.exports = function () {
         var outputHTML = output[0];
         var allAssets = output[1];
         var processCount = 1;
+        var errorEmitted = false;
 
         function Done() {
             if(--processCount==0)
@@ -93,11 +94,11 @@ module.exports = function () {
                         processCount++;
                     streamqueue.apply(null,[{objectMode:true}].concat(streams))
                         .on("error",function(err) {
-                            console.log('[Compilation Error]');
-                            console.log(err.fileName + ( err.loc ? `( ${err.loc.line}, ${err.loc.column} ): ` : ': '));
-                            console.log('error Babel: ' + err.message + '\n');
-                            console.log(err.codeFrame);
                             this.emit("end");
+                            if(!errorEmitted) {
+                                errorEmitted = true;
+                                self.emit("error",err);
+                            }
                         })
                         .pipe(gulpif(!options.noconcat,concat(oName)))
                         .pipe(through.obj(function(file,enc,cb) {
@@ -105,7 +106,7 @@ module.exports = function () {
                             cb();
                             Done();
                         }));
-                })(oName);
+                }).(oName);
         }
 
         var appBasePath = path.dirname(file.path);
