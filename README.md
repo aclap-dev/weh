@@ -288,7 +288,7 @@ class MyComponent extends React.Component {
         super(props);
         wehReactAttach(this,this.onWehMessage);
     }
-    wehReactAttach(message) {
+    onWehMessage(message) {
         /* do something wxith the incoming message */
     }
 }
