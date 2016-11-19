@@ -108,10 +108,7 @@ gulp.task("prj-content",function(cb) {
                 return gulp.src(fileName)
                     .pipe(babel({
                         presets: [es2015,react]
-                    }))
-                    .on("error",function(error) {
-                        console.error("JSX Error",error);
-                    });
+                    }));
             }
         },{
             src: [path.join(prjDir,"src/content/**/*.scss")],

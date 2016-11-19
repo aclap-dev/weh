@@ -92,6 +92,13 @@ module.exports = function () {
                     else
                         processCount++;
                     streamqueue.apply(null,[{objectMode:true}].concat(streams))
+                        .on("error",function(err) {
+                            console.log('[Compilation Error]');
+                            console.log(err.fileName + ( err.loc ? `( ${err.loc.line}, ${err.loc.column} ): ` : ': '));
+                            console.log('error Babel: ' + err.message + '\n');
+                            console.log(err.codeFrame);
+                            this.emit("end");
+                        })
                         .pipe(gulpif(!options.noconcat,concat(oName)))
                         .pipe(through.obj(function(file,enc,cb) {
                             self.push(file);
