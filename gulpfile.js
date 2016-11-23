@@ -38,7 +38,7 @@ var prjDir = argv.prjdir || 'tmp/trash-prj';
 var buildDir = path.join(prjDir,argv.builddir || "build");
 var template = argv.template || "skeleton";
 
-var wehBackgroundModules = ["core","prefs","ui","ajax"];
+var wehBackgroundModules = ["core","inspect","prefs","ui","ajax"];
 
 var jsBanner = null, jsBannerData;
 
