@@ -21,7 +21,8 @@ module.exports = function (blocks, content, options) {
 
       if(options.changeExt) {
           for(var ext in options.changeExt) {
-              var re = new RegExp('(<(?:script|link)\\b.*?\\b(?:src|href)\\s*=\\s*[\'"][^\'"]*?\\.)'+ext+'([\'"])','gm');
+              var re = new RegExp('(<(?:script|link)\\b.*?\\b(?:src|href)\\s*=\\s*[\'"][^\'"]*?)'+ext.replace(".","\\.")
+                                  +'([\'"])','gm');
               blockContent = blockContent.replace(re,"$1"+options.changeExt[ext]+"$2");
           }
       }
