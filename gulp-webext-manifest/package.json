@@ -1,0 +1,16 @@
+{
+  "name": "gulp-webext-manifest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michel Gutierrez",
+  "license": "ISC",
+  "dependencies": {
+    "glob": "^7.1.1",
+    "minimatch": "^3.0.3",
+    "streamqueue": "^1.1.1"
+  }
+}
