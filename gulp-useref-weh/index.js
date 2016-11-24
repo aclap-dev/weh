@@ -36,37 +36,6 @@ module.exports = function () {
         options = arguments[0] || {};
     }
 
-    function GetAssetStreams(oName,scripts,callback) {
-
-        var assetStreams = [];
-
-        scripts.forEach(function(script) {
-            if(handlers.every(function(handler) {
-                var patterns = handler.src;
-                if(!Array.isArray(patterns))
-                    patterns = new Array(patterns);
-                if(!patterns.every(function(pattern) {
-                    var files = glob.sync(pattern);
-                    if(!files.every(function(file) {
-                        if(minimatch(file,script,{matchBase:true})) {
-                            assetStreams.push(handler.stream && handler.stream(file) || gulp.src(file));
-                            return false;
-                        }
-                        return true;
-                    }))
-                       return false;
-                    return true;
-                }))
-                   return false
-                return true;
-            }))
-                console.warn("gulp-useref-weh: No handler found for",script);
-        });
-
-        return assetStreams;
-    }
-
-
     return through.obj(function (file, enc, callback) {
 
         var self = this;
@@ -79,46 +48,97 @@ module.exports = function () {
         var processCount = 1;
         var errorEmitted = false;
 
+		var cwd = process.cwd();
+        var baseDir = path.dirname(file.path);
+        if(options.base)
+            baseDir = options.base;
+        process.chdir(baseDir);
+        this.push(new File({
+            path: file.path,
+            contents: Buffer.from(outputHTML)
+        }));
+        process.chdir(cwd);
+        var relDir = path.dirname(path.relative(baseDir,file.path));
+
+        function GetAssetStreams(scripts) {
+
+            var assetStreams = [];
+            var fileScriptMap = {};
+
+            scripts.forEach(function(script) {
+                if(handlers.every(function(handler) {
+                    var patterns = handler.src;
+                    if(!Array.isArray(patterns))
+                        patterns = new Array(patterns);
+                    if(!patterns.every(function(pattern) {
+                        var files = glob.sync(pattern);
+                        if(!files.every(function(file) {
+                            if(minimatch(file,script,{matchBase:true})) {
+                                assetStreams.push(handler.stream && handler.stream(file) || gulp.src(file));
+                                fileScriptMap[path.resolve(file)] = script;
+                                return false;
+                            }
+                            return true;
+                        }))
+                           return false;
+                        return true;
+                    }))
+                       return false
+                    return true;
+                }))
+                    console.warn("gulp-useref-weh: No handler found for",script);
+            });
+
+            return {
+                assetStreams: assetStreams,
+                fileScriptMap: fileScriptMap
+            }
+        }
+
         function Done() {
             if(--processCount==0)
                 callback();
         }
 
+        function ChangeExt(name) {
+            while(options.changeExt && (path.extname(name) in options.changeExt))
+                name = name.substr(0, name.lastIndexOf(".")) + options.changeExt[path.extname(name)];
+            return name;
+        }
+
         for(var type in allAssets) {
             for(var oName in allAssets[type])
                 (function(oName) {
-                    var streams = GetAssetStreams(oName,allAssets[type][oName].assets);
+                    var streamsObj = GetAssetStreams(allAssets[type][oName].assets);
+                    var streams = streamsObj.assetStreams;
+                    var fileScriptMap = {};
+                    for(var key in streamsObj.fileScriptMap)
+                        fileScriptMap[ChangeExt(key)] = ChangeExt(streamsObj.fileScriptMap[key]);
+
                     if(options.noconcat)
                         processCount+=streams.length;
                     else
                         processCount++;
+
                     streamqueue.apply(null,[{objectMode:true}].concat(streams))
                         .on("error",function(err) {
+                            self.emit("error",err);
                             this.emit("end");
-                            if(!errorEmitted) {
-                                errorEmitted = true;
-                                self.emit("error",err);
-                            }
                         })
                         .pipe(gulpif(!options.noconcat,concat(oName)))
                         .pipe(through.obj(function(file,enc,cb) {
-                            self.push(file);
+                            var scriptFile = fileScriptMap[file.path];
+
+                            self.push(new File({
+                                path: path.join(relDir,scriptFile),
+                                contents: file.contents
+                            }));
+
                             cb();
                             Done();
                         }));
                 })(oName);
         }
-
-        var appBasePath = path.dirname(file.path);
-		var cwd = process.cwd();
-        process.chdir(appBasePath);
-
-        this.push(new File({
-            path: file.path,
-            contents: Buffer.from(outputHTML)
-        }));
-
-        process.chdir(cwd);
 
         Done();
     });
