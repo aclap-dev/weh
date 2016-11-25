@@ -130,7 +130,7 @@ module.exports = function () {
 
         if(manifest.background && manifest.background.scripts) {
             if(options.background && options.background.initialScripts)
-                manifest.background.scripts = manifest.background.scripts.concat(options.background.initialScripts);
+                manifest.background.scripts = options.background.initialScripts.concat(manifest.background.scripts);
             var bundle = options.background && options.background.target || "background/background.js";
             manifest.background.scripts = HandleAssets(manifest.background.scripts,bundle);
         }
