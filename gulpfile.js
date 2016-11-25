@@ -45,12 +45,12 @@ if(process.env.wehCwd)
     process.chdir(process.env.wehCwd);
 
 var dev = !!argv.dev;
-var prjDir = path.resolve(argv.prjdir || 'tmp/trash-prj');
+var prjDir = path.resolve(argv.prjdir || '.');
 var buildDir = path.join(prjDir,argv.builddir || "build");
 var srcDir = path.join(prjDir,argv.srcdir || "src");
 var locDir = path.join(prjDir,argv.locdir || "src/locales");
+var etcDir = path.join(prjDir,argv.etcdir || "etc");
 var template = argv.template || "skeleton";
-
 var wehBackgroundModules = ["core","inspect","prefs","ui","ajax"];
 
 var jsBanner = null, jsBannerData;
@@ -62,9 +62,9 @@ if(argv.jsheader || (!dev && argv.jsheader!==false)) {
             manifest: require(path.join(srcDir,"manifest.json"))
         }
         try {
-            jsBanner = fs.readFileSync(path.join(prjDir,"etc/jsbanner.txt"),"utf8");
+            jsBanner = fs.readFileSync(path.join(etcDir,"jsbanner.txt"),"utf8");
         } catch(e) {
-            jsBanner = fs.readFileSync("etc/jsbanner.txt","utf8");
+            jsBanner = fs.readFileSync(path.join(__dirname,"etc/jsbanner.txt"),"utf8");
         }
     } catch(e) {}
 }
@@ -352,12 +352,31 @@ gulp.task("watch",function() {
     gulp.watch(path.join(srcDir,"manifest.json"), ["build-manifest"]);
     gulp.watch(prjCodeGlobs,["build-code-prj"]);
     gulp.watch(wehCodeGlobs,["build-code-weh"]);
+    setTimeout(function() {
+        console.info("Watching for changes");
+    });
 });
 
 // default task if none specified in command line
 gulp.task("default", function(callback) {
     if(argv.help)
         return runSequence("help");
+    if(argv.templates)
+        return runSequence("templates");
+
+    console.info("Directories:");
+    console.info("  src:",srcDir);
+    console.info("  build:",buildDir);
+    console.info("  locales:",locDir);
+    console.info("  etc:",etcDir);
+
+    try {
+        JSON.parse(fs.readFileSync(path.join(srcDir,"manifest.json"),"utf8"));
+    } catch(e) {
+        console.error("Directory",srcDir,"does not contain a valid manifest.json file. You may want to init a new weh project first with 'weh init --prjdir my-project'");
+        process.exit(-1);
+    }
+
     var tasks = ["clean","build"];
     if(argv["watch"]!==false && dev)
         tasks.push("watch");
@@ -370,7 +389,7 @@ gulp.task("copy-template",function(callback) {
     try {
         fs.accessSync(prjDir,fs.F_OK);
         if(!argv.force) {
-            console.error(prjDir+" already exists");
+            console.error(prjDir+" already exists. Use --force option to overwrite.");
             process.exit(-1);
             return;
         }
