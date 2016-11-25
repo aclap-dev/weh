@@ -153,7 +153,7 @@ var changeExt = {
 function ResolveOutput(stream) {
     return stream
         .pipe(rename(function(path) {
-            path.dirname = path.dirname.replace(/\/_assets\b/,"/");
+            path.dirname = path.dirname.replace(/\b_assets\b/,"/").replace("//","/");
             return path;
         }))
         .pipe(gulpif(!dev,gulpif('*.js', uglify())))
