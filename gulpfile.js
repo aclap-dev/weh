@@ -41,8 +41,11 @@ const path = require("path");
 const glob = require("glob");
 const through = require('through2');
 
+if(process.env.wehCwd)
+    process.chdir(process.env.wehCwd);
+
 var dev = !!argv.dev;
-var prjDir = argv.prjdir || 'tmp/trash-prj';
+var prjDir = path.resolve(argv.prjdir || 'tmp/trash-prj');
 var buildDir = path.join(prjDir,argv.builddir || "build");
 var srcDir = path.join(prjDir,argv.srcdir || "src");
 var locDir = path.join(prjDir,argv.locdir || "src/locales");
@@ -134,7 +137,7 @@ function ResolveInput(stream) {
 var prjCodeGlobs = [path.join(srcDir,"**/*.{js,css,js.ejs,css.ejs,jsx,jsx.ejs,scss,scss.ejs,"+
     "ts,ts.ejs,coffee,coffee.ejs,less,less.ejs,styl,styl.ejs}")];
 // files to be considered from weh
-var wehCodeGlobs = ["src/**/*.{js,css,jsx}"];
+var wehCodeGlobs = [path.join(__dirname,"src/**/*.{js,css,jsx}")];
 
 // all potential input files, including vendor libraries
 var globs = [].concat(wehCodeGlobs,prjCodeGlobs,[
@@ -143,7 +146,9 @@ var globs = [].concat(wehCodeGlobs,prjCodeGlobs,[
     "node_modules/bootstrap/dist/css/*.css",
     "node_modules/bootstrap/dist/js/*.js",
     "node_modules/jquery/dist/**/*.js"
-])
+].map(function(pattern) {
+    return path.join(__dirname,pattern);
+}));
 
 var usedSourceFiles = {}; // retain files used when processing html or manifest
 
@@ -364,21 +369,24 @@ gulp.task("default", function(callback) {
 gulp.task("copy-template",function(callback) {
     try {
         fs.accessSync(prjDir,fs.F_OK);
-        if(!force)
-            return callback(new Error(prjDir+" already exists"));
+        if(!argv.force) {
+            console.error(prjDir+" already exists");
+            process.exit(-1);
+            return;
+        }
     } catch(e) {}
-    gulp.src("templates/"+template+"/**/*")
+    gulp.src(path.join(__dirname,"templates",template,"/**/*"))
         .pipe(gulp.dest(prjDir))
         .on("end",callback);
 });
 
 // list available templates
 gulp.task("templates",function() {
-    var templates = fs.readdirSync("templates");
+    var templates = fs.readdirSync(path.join(__dirname,"templates"));
     templates.forEach(function(template) {
         var manifest = null;
         try {
-            manifest = JSON.parse(fs.readFileSync(path.join("templates",template,"src/manifest.json"),"utf8"));
+            manifest = JSON.parse(fs.readFileSync(path.join(__dirname,"templates",template,"src/manifest.json"),"utf8"));
         } catch(e) {}
         console.info(template+":",manifest && manifest.description ? manifest.description : "no description found");
     });
