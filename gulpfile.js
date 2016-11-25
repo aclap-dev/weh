@@ -44,7 +44,7 @@ const through = require('through2');
 if(process.env.wehCwd)
     process.chdir(process.env.wehCwd);
 
-var dev = !!argv.dev;
+var dev = !argv.prod;
 var prjDir = path.resolve(argv.prjdir || '.');
 var buildDir = path.join(prjDir,argv.builddir || "build");
 var srcDir = path.join(prjDir,argv.srcdir || "src");
