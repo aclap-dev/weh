@@ -39,6 +39,7 @@ const fs = require("fs");
 const argv = require('yargs').argv;
 const path = require("path");
 const glob = require("glob");
+const through = require('through2');
 
 var dev = !!argv.dev;
 var prjDir = argv.prjdir || 'tmp/trash-prj';
@@ -137,9 +138,12 @@ var globs = [].concat(wehCodeGlobs,prjCodeGlobs,[
     "node_modules/jquery/dist/**/*.js"
 ])
 
+var usedSourceFiles = {};
+
 var sources = [{
     src: globs,
     stream: function(fileName) {
+        usedSourceFiles[path.resolve(fileName)] = 1;
         return ResolveInput(gulp.src(fileName))
     }
 }];
@@ -282,12 +286,24 @@ gulp.task("build-locales",function() {
         .pipe(gulp.dest(path.join(buildDir,"_locales")));
 });
 
+function FilterUsed() {
+    return through.obj(function (file, enc, callback) {
+        if(usedSourceFiles[file.path])
+            this.push(file);
+        callback();
+    });
+}
+
 gulp.task("build-code-prj",function() {
-    return ResolveOutput(ResolveInput(gulp.src(prjCodeGlobs)));
+    return ResolveOutput(ResolveInput(gulp.src(prjCodeGlobs)
+        .pipe(FilterUsed())
+    ));
 });
 
 gulp.task("build-code-weh",function() {
-    return ResolveOutput(ResolveInput(gulp.src(wehCodeGlobs)));
+    return ResolveOutput(ResolveInput(gulp.src(wehCodeGlobs)
+        .pipe(FilterUsed())
+    ));
 });
 
 gulp.task("clean",function() {
