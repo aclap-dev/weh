@@ -269,7 +269,7 @@ gulp.task("build-html",function(callback) {
         .pipe(replace(/<\!--\s*weh:js\s*(.*?)\s*-->/g,AddScripts))
         .pipe(replace(/<\!--\s*weh:css\s*(.*?)\s*-->/g,AddStyles))
         .pipe(userefWeh(sources,{
-            noconcat: argv.concat===false || (!!dev && argv.concat!==false),
+            noconcat: argv.concat===false || (dev && argv.concat!==false),
             changeExt: changeExt,
             base: srcDir
         }))
@@ -288,7 +288,7 @@ gulp.task("build-manifest",function(callback) {
                     return "background/weh-"+module+".js";
                 })
             },
-            noconcat: argv.concat===false || (!!dev && argv.concat!==false),
+            noconcat: argv.concat===false || (dev && argv.concat!==false),
             changeExt: changeExt
         }))
         .on("error",function(err) {
@@ -431,15 +431,15 @@ gulp.task("help", function() {
         "",
         "options:",
         "  --prjdir <dir>: project directory (required for most commands)",
-        "  --dev: addon generated for development",
+        "  --prod: addon generated for production",
         "  --template <template>: template to be used when creating a new project",
         "  --no-watch! do generate builds dynamically",
         "  --force: force overwrite output directory",
-        "  --jsheader/--no-jsheader: force JS headers on dev builds/disable JS headers on non-dev builds",
-        "  --minifyjs/--no-minifyjs: force JS minification on/off, default is minification on non-dev builds",
-        "  --minifycss/--no-minifycss: force CSS minification on/off, default is minification on non-dev builds",
-        "  --minifyhtml/--no-minifyhtml: force HTML minification on/off, default is minification on non-dev builds",
-        "  --concat/--no-concat: force HTML and CSS concatenation on/off, default is concatenation on non-dev builds",
+        "  --jsheader/--no-jsheader: force JS headers on dev builds/disable JS headers on prod builds",
+        "  --minifyjs/--no-minifyjs: force JS minification on/off, default is minification on prod builds",
+        "  --minifycss/--no-minifycss: force CSS minification on/off, default is minification on prod builds",
+        "  --minifyhtml/--no-minifyhtml: force HTML minification on/off, default is minification on prod builds",
+        "  --concat/--no-concat: force HTML and CSS concatenation on/off, default is concatenation on prod builds",
         "  --ejsdata: one or several (separated by '"+path.delimiter+"') JSON files used as data source when compiling "+
             "EJS files",
     ];

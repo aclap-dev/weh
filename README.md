@@ -76,7 +76,7 @@ You don't need to do anything special to make *weh* background libraries availab
     }
 ```
 
-When the add-on is built, *weh* background modules will be added automatically. If the `--dev` option is not provided, *weh* and custom files
+When the add-on is built, *weh* background modules will be added automatically. If the `--prod` option is provided, *weh* and custom files
 will be concatenated and minified.
 
 For content files, you must load a number of scripts and styles into your HTML files. For instance:
@@ -104,7 +104,7 @@ For content files, you must load a number of scripts and styles into your HTML f
 
 When the extension is built, `<!-- weh:js weh-all -->` is first replaced by weh scripts inclusion. Then, the sections between
 `<!-- build:type file -->` and `<!-- endbuild -->` are processed to be concatenated into a single file (per section) and minified
-unless you specify the `--dev` for development mode.
+if you specify the `--prod` for production mode.
 
 ### weh preferences
 
