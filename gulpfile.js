@@ -157,10 +157,14 @@ function ResolveOutput(stream) {
             path.dirname = path.dirname.replace(/\b_assets\b/,"/").replace("//","/");
             return path;
         }))
-        .pipe(gulpif(!dev,gulpif('*.js', uglify())))
-        .pipe(gulpif(!!jsBanner,gulpif('*.js',header(jsBanner,jsBannerData))))
-        .pipe(gulpif(!dev,gulpif('*.css',cleanCSS({compatibility: 'ie8'}))))
-        .pipe(gulpif(!dev,gulpif('*.html',htmlmin({collapseWhitespace: true}))))
+        .pipe(gulpif(argv.minifyjs || (!dev && argv.minifyjs!==false),
+                     gulpif('*.js', uglify())))
+        .pipe(gulpif(!!jsBanner,
+                     gulpif('*.js',header(jsBanner,jsBannerData))))
+        .pipe(gulpif(argv.minifycss || (!dev && argv.minifycss!==false),
+                     gulpif('*.css',cleanCSS({compatibility: 'ie8'}))))
+        .pipe(gulpif(argv.minifyhtml || (!dev && argv.minifyhtml!==false),
+                     gulpif('*.html',htmlmin({collapseWhitespace: true}))))
         .pipe(gulp.dest(buildDir));
 }
 
@@ -239,7 +243,7 @@ gulp.task("build-html",function(callback) {
         .pipe(replace(/<\!--\s*weh:js\s*(.*?)\s*-->/g,AddScripts))
         .pipe(replace(/<\!--\s*weh:css\s*(.*?)\s*-->/g,AddStyles))
         .pipe(userefWeh(sources,{
-            noconcat: !!dev,
+            noconcat: argv.concat===false || (!!dev && argv.concat!==false),
             changeExt: changeExt,
             base: srcDir
         }))
@@ -257,7 +261,7 @@ gulp.task("build-manifest",function(callback) {
                     return "background/weh-"+module+".js";
                 })
             },
-            noconcat: !!dev,
+            noconcat: argv.concat===false || (!!dev && argv.concat!==false),
             changeExt: changeExt
         }))
         .on("error",function(err) {
@@ -333,7 +337,13 @@ gulp.task("help", function() {
         "  --template <template>: template to be used when creating a new project",
         "  --no-watch! do generate builds dynamically",
         "  --force: force overwrite output directory",
-        "  --jsheader/--no-jsheader: force JS headers on dev builds/disable JS headers on non-dev builds"
+        "  --jsheader/--no-jsheader: force JS headers on dev builds/disable JS headers on non-dev builds",
+        "  --minifyjs/--no-minifyjs: force JS minification on/off, default is minification on non-dev builds",
+        "  --minifycss/--no-minifycss: force CSS minification on/off, default is minification on non-dev builds",
+        "  --minifyhtml/--no-minifyhtml: force HTML minification on/off, default is minification on non-dev builds",
+        "  --concat/--no-concat: force HTML and CSS concatenation on/off, default is concatenation on non-dev builds",
+        "  --ejsdata: one or several (separated by '"+path.delimiter+"') JSON files used as data source when compiling "+
+            "EJS files",
     ];
     console.log(help.join("\n"));
     process.exit(0);
