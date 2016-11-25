@@ -110,7 +110,7 @@ module.exports = function () {
                 .pipe(gulpif(!options.noconcat,concat(bundle)))
                 .pipe(through.obj(function(file,enc,cb) {
                     self.push(new File({
-                        path: fileScriptMap[file.path],
+                        path: options.noconcat ? fileScriptMap[file.path] : bundle,
                         contents: file.contents
                     }));
                     cb();
