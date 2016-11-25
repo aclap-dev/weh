@@ -5,6 +5,7 @@
     , "version": "0.1"
     , "version_name": "0.1 beta 1"
     , "author": "Michel Gutierrez"
+    , "description": "Basic add-on code to start from"
     , "background": {
         "scripts": [
             "background/default-prefs.js",

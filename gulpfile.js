@@ -372,6 +372,19 @@ gulp.task("copy-template",function(callback) {
         .on("end",callback);
 });
 
+// list available templates
+gulp.task("templates",function() {
+    var templates = fs.readdirSync("templates");
+    templates.forEach(function(template) {
+        var manifest = null;
+        try {
+            manifest = JSON.parse(fs.readFileSync(path.join("templates",template,"src/manifest.json"),"utf8"));
+        } catch(e) {}
+        console.info(template+":",manifest && manifest.description ? manifest.description : "no description found");
+    });
+    process.exit(0);
+});
+
 // create new project
 gulp.task("init", function(callback) {
     runSequence("copy-template","build",callback);
