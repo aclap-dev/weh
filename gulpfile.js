@@ -125,14 +125,17 @@ function ResolveInput(stream) {
         });
 }
 
-var globs = [path.join(srcDir,"**/*.{js,css,js.ejs,css.ejs,jsx,jsx.ejs,scss,scss.ejs,"+
+var prjCodeGlobs = [path.join(srcDir,"**/*.{js,css,js.ejs,css.ejs,jsx,jsx.ejs,scss,scss.ejs,"+
     "ts,ts.ejs,coffee,coffee.ejs,less,less.ejs,styl,styl.ejs}")];
-globs.push("src/**/*.{js,css,jsx}");
-globs.push("node_modules/react/dist/**/*.{js,css}");
-globs.push("node_modules/react-dom/dist/**/*.{js,css}");
-globs.push("node_modules/bootstrap/dist/css/*.css");
-globs.push("node_modules/bootstrap/dist/js/*.js");
-globs.push("node_modules/jquery/dist/**/*.js");
+var wehCodeGlobs = ["src/**/*.{js,css,jsx}"];
+
+var globs = [].concat(wehCodeGlobs,prjCodeGlobs,[
+    "node_modules/react/dist/**/*.{js,css}",
+    "node_modules/react-dom/dist/**/*.{js,css}",
+    "node_modules/bootstrap/dist/css/*.css",
+    "node_modules/bootstrap/dist/js/*.js",
+    "node_modules/jquery/dist/**/*.js"
+])
 
 var sources = [{
     src: globs,
@@ -254,7 +257,7 @@ gulp.task("build-html",function(callback) {
 });
 
 gulp.task("build-manifest",function(callback) {
-    ResolveOutput(SrcExtend(path.join(srcDir,"**/manifest.json"))
+    ResolveOutput(SrcExtend(path.join(srcDir,"manifest.json"))
         .pipe(manifest(sources,{
             background: {
                 initialScripts:  wehBackgroundModules.map(function(module) {
@@ -279,6 +282,14 @@ gulp.task("build-locales",function() {
         .pipe(gulp.dest(path.join(buildDir,"_locales")));
 });
 
+gulp.task("build-code-prj",function() {
+    return ResolveOutput(ResolveInput(gulp.src(prjCodeGlobs)));
+});
+
+gulp.task("build-code-weh",function() {
+    return ResolveOutput(ResolveInput(gulp.src(wehCodeGlobs)));
+});
+
 gulp.task("clean",function() {
     return del([buildDir+"/*"],{force:true});
 });
@@ -290,16 +301,21 @@ gulp.task("build",[
     "build-locales"
 ]);
 
-gulp.task("watch-prj",function() {
-    gulp.watch([path.join(srcDir,"**/*"),"src/**/*"], ["build"]);
+gulp.task("watch",function() {
+    gulp.watch(path.join(locDir,"**/*"), ["build-locales"]);
+    gulp.watch(path.join(srcDir,"**/_assets/**/*"), ["build-assets"]);
+    gulp.watch(path.join(srcDir,"**/*.html"), ["build-html"]);
+    gulp.watch(path.join(srcDir,"manifest.json"), ["build-manifest"]);
+    gulp.watch(prjCodeGlobs,["build-code-prj"]);
+    gulp.watch(wehCodeGlobs,["build-code-weh"]);
 });
 
 gulp.task("default", function(callback) {
     if(argv.help)
         return runSequence("help");
     var tasks = ["clean","build"];
-    if(argv["watch"]!==false)
-        tasks.push("watch-prj");
+    if(argv["watch"]!==false && dev)
+        tasks.push("watch");
     tasks.push(callback);
     runSequence.apply(null,tasks);
 });
@@ -326,10 +342,9 @@ gulp.task("help", function() {
         "commands:",
         "  build: generate project build",
         "  clean: remove project build recursively",
-        "  watch-prj: watch project and build dynamically on changes",
+        "  watch: watch project and build dynamically on changes",
         "  init: generate project from template",
-        "  watch-weh: watch weh source and update project build dynamically",
-        "default commands: clean + build + watch-prj",
+        "default commands: clean + build + watch",
         "",
         "options:",
         "  --prjdir <dir>: project directory (required for most commands)",
