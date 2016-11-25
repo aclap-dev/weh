@@ -52,10 +52,11 @@ var wehBackgroundModules = ["core","inspect","prefs","ui","ajax"];
 
 var jsBanner = null, jsBannerData;
 
+// banner to go to js files after concat + minify
 if(argv.jsheader || (!dev && argv.jsheader!==false)) {
     try {
         jsBannerData = {
-            manifest: require(path.join(prjDir,"src/manifest.json"))
+            manifest: require(path.join(srcDir,"manifest.json"))
         }
         try {
             jsBanner = fs.readFileSync(path.join(prjDir,"etc/jsbanner.txt"),"utf8");
@@ -65,6 +66,7 @@ if(argv.jsheader || (!dev && argv.jsheader!==false)) {
     } catch(e) {}
 }
 
+// load data to be used in case of ejs pre-processing
 var ejsData = {};
 if(argv.ejsdata) {
     argv.ejsdata.split(path.delimiter).forEach(function(jsonFile) {
@@ -76,6 +78,7 @@ if(argv.ejsdata) {
     });
 }
 
+// replace gulp.src to process ejs if needed
 function SrcExtend(glob) {
     if(!Array.isArray(glob))
         glob = [ glob ];
@@ -92,6 +95,7 @@ function SrcExtend(glob) {
     return merge.apply(null,streams);
 }
 
+// process input files to handle various script and styles languages
 function ResolveInput(stream) {
     var error = null;
     return stream
@@ -126,10 +130,13 @@ function ResolveInput(stream) {
         });
 }
 
+// potential input files in the process
 var prjCodeGlobs = [path.join(srcDir,"**/*.{js,css,js.ejs,css.ejs,jsx,jsx.ejs,scss,scss.ejs,"+
     "ts,ts.ejs,coffee,coffee.ejs,less,less.ejs,styl,styl.ejs}")];
+// files to be considered from weh
 var wehCodeGlobs = ["src/**/*.{js,css,jsx}"];
 
+// all potential input files, including vendor libraries
 var globs = [].concat(wehCodeGlobs,prjCodeGlobs,[
     "node_modules/react/dist/**/*.{js,css}",
     "node_modules/react-dom/dist/**/*.{js,css}",
@@ -138,8 +145,9 @@ var globs = [].concat(wehCodeGlobs,prjCodeGlobs,[
     "node_modules/jquery/dist/**/*.js"
 ])
 
-var usedSourceFiles = {};
+var usedSourceFiles = {}; // retain files used when processing html or manifest
 
+// streams to serve input files when processing html and manifest
 var sources = [{
     src: globs,
     stream: function(fileName) {
@@ -148,6 +156,7 @@ var sources = [{
     }
 }];
 
+// file extension translation map
 var changeExt = {
     ".ejs": "",
     ".jsx": ".js",
@@ -158,6 +167,7 @@ var changeExt = {
     ".styl": ".css"
 }
 
+// processing output files for minification
 function ResolveOutput(stream) {
     return stream
         .pipe(rename(function(path) {
@@ -175,6 +185,7 @@ function ResolveOutput(stream) {
         .pipe(gulp.dest(buildDir));
 }
 
+// return html code to included required scripts
 function AddScripts(org,match) {
     var scripts = [];
     function AddReactScripts() {
@@ -217,6 +228,7 @@ function AddScripts(org,match) {
     return scripts.join("\n");
 }
 
+// return html code to included required stylesheets
 function AddStyles(org,match) {
     var styles = [];
     match.split(",").map(function(term) {
@@ -233,6 +245,7 @@ function AddStyles(org,match) {
     return styles.join("\n");
 }
 
+// display error nicely and end the stream
 function HandleError(err) {
     console.log('[Compilation Error]');
     if(err.plugin)
@@ -245,6 +258,7 @@ function HandleError(err) {
     this.emit("end");
 }
 
+// process html files
 gulp.task("build-html",function(callback) {
     ResolveOutput(SrcExtend(path.join(srcDir,"**/*.html"))
         .pipe(replace(/<\!--\s*weh:js\s*(.*?)\s*-->/g,AddScripts))
@@ -260,6 +274,7 @@ gulp.task("build-html",function(callback) {
     ).on("end",callback);
 });
 
+// process manifest.json file
 gulp.task("build-manifest",function(callback) {
     ResolveOutput(SrcExtend(path.join(srcDir,"manifest.json"))
         .pipe(manifest(sources,{
@@ -277,15 +292,18 @@ gulp.task("build-manifest",function(callback) {
     ).on("end",callback);
 });
 
+// build assets: input files that need to be processed but discovered in html nor manifest
 gulp.task("build-assets",function(callback) {
     return ResolveOutput(ResolveInput(SrcExtend(path.join(srcDir,"**/_assets/**/*"))));
 });
 
+// copy locale files
 gulp.task("build-locales",function() {
     return gulp.src(path.join(locDir,"**/*"))
         .pipe(gulp.dest(path.join(buildDir,"_locales")));
 });
 
+// filter to prevent unused file to be processed on watch
 function FilterUsed() {
     return through.obj(function (file, enc, callback) {
         if(usedSourceFiles[file.path])
@@ -294,22 +312,26 @@ function FilterUsed() {
     });
 }
 
+// build project files on watch
 gulp.task("build-code-prj",function() {
     return ResolveOutput(ResolveInput(gulp.src(prjCodeGlobs)
         .pipe(FilterUsed())
     ));
 });
 
+// build weh files on watch
 gulp.task("build-code-weh",function() {
     return ResolveOutput(ResolveInput(gulp.src(wehCodeGlobs)
         .pipe(FilterUsed())
     ));
 });
 
+// erase build directory
 gulp.task("clean",function() {
     return del([buildDir+"/*"],{force:true});
 });
 
+// build everything
 gulp.task("build",[
     "build-html",
     "build-manifest",
@@ -317,6 +339,7 @@ gulp.task("build",[
     "build-locales"
 ]);
 
+// watch for changes and rebuild what's needed
 gulp.task("watch",function() {
     gulp.watch(path.join(locDir,"**/*"), ["build-locales"]);
     gulp.watch(path.join(srcDir,"**/_assets/**/*"), ["build-assets"]);
@@ -326,6 +349,7 @@ gulp.task("watch",function() {
     gulp.watch(wehCodeGlobs,["build-code-weh"]);
 });
 
+// default task if none specified in command line
 gulp.task("default", function(callback) {
     if(argv.help)
         return runSequence("help");
@@ -336,6 +360,7 @@ gulp.task("default", function(callback) {
     runSequence.apply(null,tasks);
 });
 
+// copy template directory when creating new project
 gulp.task("copy-template",function(callback) {
     try {
         fs.accessSync(prjDir,fs.F_OK);
@@ -347,10 +372,12 @@ gulp.task("copy-template",function(callback) {
         .on("end",callback);
 });
 
+// create new project
 gulp.task("init", function(callback) {
     runSequence("copy-template","build",callback);
 });
 
+// get some help
 gulp.task("help", function() {
     var help = [
         "usage: gulp [<commands>] [<options>]",
