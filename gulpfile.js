@@ -16,7 +16,6 @@ const babel = require('gulp-babel');
 const uglify = require('gulp-uglify');
 const del = require("del");
 const sass = require('gulp-sass');
-const concat = require("gulp-concat");
 const replace = require('gulp-replace');
 const gulpif = require('gulp-if');
 const debug = require('gulp-debug');
