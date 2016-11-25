@@ -130,7 +130,7 @@ module.exports = function () {
                             var scriptFile = fileScriptMap[file.path];
 
                             self.push(new File({
-                                path: path.join(relDir,scriptFile),
+                                path: options.noconcat ? path.join(relDir,scriptFile) : oName,
                                 contents: file.contents
                             }));
 
