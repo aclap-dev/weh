@@ -10,38 +10,43 @@ not to use this library.
 
 **weh**-generated extensions are compatible with Firefox, Chrome, Opera and Edge. You should of course maintain this compatibility in the code you add to your project.
 
-## install
+## install from github
 
 ```
 npm install -g gulp
 git clone https://github.com/mi-g/weh.git
 cd weh
 npm install
+npm link
 ```
+
+You can now move away from the *weh* directory.
 
 ## using weh
 
-Create a new extension project:
+To create a new extension project:
 
 ```
-gulp init --prjdir ../myextension
+weh init --prjdir myextension
 ```
 
-You now have, next to your `weh` directory, a `myextension` folder. The `myextension/src` sub-directory is the place where your add-on specific
-code goes. After running `gulp init`, the directory contains a simple skeleton code that demonstrates preferences edition. This code is to be modified
+You now have a `myextension` folder. The `myextension/src` sub-directory is the place where your add-on specific
+code goes. After running `weh init`, the directory contains a simple skeleton code that demonstrates preferences edition. This code is to be modified
 to do what your extension is supposed to do.
+The `myextension/build` contain an add-on ready to be installed into your browser.
+
+To build and maintain the add-on:
 
 ```
-gulp --prjdir ../myextension
+cd myextension
+weh
 ```
 
-`myextension` now has a sub-directory `build` ready to be installed into your browser.
-
-You will notice that the last `gulp` command does not return. It is in watch mode, meaning whenever you make a change into the `myextension/src`
+You will notice that the last `weh` command does not return. It is in watch mode, meaning whenever you make a change into the `myextension/src`
 directory, those changes are rebuild into `myextension/build`. If you do not want this behaviour and prefer running the build command manually,
 add `--no-watch` to the command line.
 
-Run `gulp help` to see more command line options.
+Run `weh help` to see more command line options.
 
 ## installing a local add-on into the browser
 
@@ -54,17 +59,22 @@ Run `gulp help` to see more command line options.
 
 **weh** expects all project-specific code to be put into the `src` sub-directory:
 
-- `src/background/`: the code that runs into your extension background. *.js* files are copied to `build/background`
-- `src/content/`: the code to be run as content, into an add-on-controlled panel or tab. *.js* files are copied to the `build/content` 
-directory, *.jsx* file are processed with a *JSX* processor to generate *.js* files. *.scss* files are compiled to *.css*. *.html* and *.css* files
-- `src/content/assets`: all files and directory from there are copied verbatim to `build/content` (without the `assets` part). Make sure not to have a 
-same *.js* or ".css* file name into both `src/content` and `src/content/assets` to prevent conflicts
+- `src/manifest.json`: your add-on's manifest
+- `src/**/*.html`: those files are processed, so resources like js and css (and other supported languages) are learned and
+processed to the build directory.
 - `src/locales`: files are copied to `build/_locales`
 - `src/manifest.json`: file is copied to `build`
-- `src/assets/`: files and directory are copied verbatim (without the `assets` part)
+- `src/**/_assets/`: files and directories are processed (for language compilation) and copied to the build directory 
+(without the `_assets` part)
+- `etc/jsbanner.txt`: file that you can optionnally create to setup a header in the JS files.
 
+Note that a `.js` or `css` file that would be located in `src/` but not referenced from `manifest.json` nor any `.html`
+file won't be copied to the build directory. If you want this file in the build, you must put it in a `_assets`
+sub-directory of `src/`.
 
-## using weh libraries
+Also note that you can change the `src` directory by specifying a directory path with the `--srcdir` option.
+
+## defining resources
 
 You don't need to do anything special to make *weh* background libraries available to your add-on. Just declare your own modules in  `manifest.json`:
 
@@ -78,6 +88,14 @@ You don't need to do anything special to make *weh* background libraries availab
 
 When the add-on is built, *weh* background modules will be added automatically. If the `--prod` option is provided, *weh* and custom files
 will be concatenated and minified.
+
+Content scripts and styles included in `manifest.json`are processed the same way:
+```
+   "content_scripts": [{
+        "js": [ "script1.js", "script2.js" ],
+        "css": [ "style1.css", "style2.css" ]
+    }]
+```
 
 For content files, you must load a number of scripts and styles into your HTML files. For instance:
 ```
@@ -105,6 +123,45 @@ For content files, you must load a number of scripts and styles into your HTML f
 When the extension is built, `<!-- weh:js weh-all -->` is first replaced by weh scripts inclusion. Then, the sections between
 `<!-- build:type file -->` and `<!-- endbuild -->` are processed to be concatenated into a single file (per section) and minified
 if you specify the `--prod` for production mode.
+
+## multi-language support
+
+*Weh* obviously supports Javascript (`.js` file extension) for scripts and Cascading Style Sheets (`.css` extension),
+but you can also use other languages:
+
+- scripts: *JSX* (`.jsx`), *Typescript* (`.ts`), *Coffee* (`.coffee`)
+- styling: *Sass* (`.scss`), *Less* (`.less`), *Stylus* (`.styl`)
+
+Whether in `manifest.json`or `.html` files, just use the file as if it was Javascript or CSS:
+```
+        <!-- build:css settings.css -->
+        <link href="my-styles.scss" type="text/css" rel="stylesheet">
+        <link href="my-styles2.less" type="text/css" rel="stylesheet">
+        <!-- endbuild -->
+        ...
+        <!-- build:js myextension-ui.min.js -->
+        <script src="myextension-ui.jsx"></script>
+        <script src="myextension-ui2.ts"></script>
+        <!-- endbuild -->
+```
+
+*Weh* will then take care of calling the appropriate processors and renaming the files inside `manifest.json` and
+`.html` files, so that the browser will be able to run this code.
+
+## pre-processing files
+
+All files with a `.ejs` are processed first by an *EJS* processor. For instance, a file named `myscript.js.ejs` will
+be transformed to `myscript.js` before being processed. You can specify one or several JSON files to provide data 
+for the EJS resolution using the `--ejsdata` option.
+
+The EJS pre-processing occurs in a first place, so a file named `myscript.ts.ejs` will first be EJS-processed, then
+compiled using Typescript, and will endup in the build directory as `myscript.js`.
+
+Any text file in the `src` directory can be processed with EJS, not only js and css-like.
+
+Pre-processing is useful if you want to generate different builds from the same source code.
+
+## using weh libraries
 
 ### weh preferences
 
