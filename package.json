@@ -41,6 +41,7 @@
     "gulp-debug": "^3.0.0",
     "gulp-ejs": "^2.2.1",
     "gulp-header": "^1.8.8",
+    "gulp-htmlmin": "^3.0.0",
     "gulp-if": "^2.0.2",
     "gulp-less": "^3.3.0",
     "gulp-rename": "^1.2.2",

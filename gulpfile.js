@@ -20,6 +20,7 @@ const replace = require('gulp-replace');
 const gulpif = require('gulp-if');
 const debug = require('gulp-debug');
 const cleanCSS = require('gulp-clean-css');
+const htmlmin = require('gulp-htmlmin');
 const header = require("gulp-header");
 const ejs = require("gulp-ejs");
 const rename = require("gulp-rename");
@@ -159,6 +160,7 @@ function ResolveOutput(stream) {
         .pipe(gulpif(!dev,gulpif('*.js', uglify())))
         .pipe(gulpif(!!jsBanner,gulpif('*.js',header(jsBanner,jsBannerData))))
         .pipe(gulpif(!dev,gulpif('*.css',cleanCSS({compatibility: 'ie8'}))))
+        .pipe(gulpif(!dev,gulpif('*.html',htmlmin({collapseWhitespace: true}))))
         .pipe(gulp.dest(buildDir));
 }
 
