@@ -101,12 +101,15 @@ function SrcExtend(glob) {
 // process input files to handle various script and styles languages
 function ResolveInput(stream) {
     var error = null;
+    function Error(err) {
+        if(!error) {
+            error = err;
+            this.emit("end")
+        }
+    }
     return stream
         .pipe(gulpif('*.ejs',ejs(ejsData)))
-        .on("error",function(err) {
-            error = err;
-            this.emit("end");
-        })
+        .on("error",Error)
        .pipe(gulpif('*.ejs',rename(function(path) {
             path.extname = "";
         })))
@@ -114,18 +117,20 @@ function ResolveInput(stream) {
             presets: [react],
             compact: false
         })))
+        .on("error",Error)
         .pipe(gulpif('*.ts',typescript()))
+        .on("error",Error)
         .pipe(gulpif('*.coffee',coffee({bare:true})))
-        .on("error",function(err) {
-            error = err;
-            this.emit("end");
-        })
+        .on("error",Error)
         .pipe(gulpif('*.js',babel({
             presets: [es2015],
             compact: false
         })))
+        .on("error",Error)
         .pipe(gulpif('*.scss',sass()))
+        .on("error",Error)
         .pipe(gulpif('*.less',less()))
+        .on("error",Error)
         .pipe(gulpif('*.styl',stylus()))
         .on("end",function() {
             if(error)
@@ -174,20 +179,35 @@ var changeExt = {
 
 // processing output files for minification
 function ResolveOutput(stream) {
+    var error = null;
+    function Error(err) {
+        error = err;
+    }
     return stream
+        .on("error",Error)
         .pipe(rename(function(path) {
             path.dirname = path.dirname.replace(/\b_assets\b/,"/").replace("//","/");
             return path;
         }))
+        .on("error",Error)
         .pipe(gulpif(argv.minifyjs || (!dev && argv.minifyjs!==false),
                      gulpif('*.js', uglify())))
+        .on("error",Error)
         .pipe(gulpif(!!jsBanner,
                      gulpif('*.js',header(jsBanner,jsBannerData))))
+        .on("error",Error)
         .pipe(gulpif(argv.minifycss || (!dev && argv.minifycss!==false),
                      gulpif('*.css',cleanCSS({compatibility: 'ie8'}))))
+        .on("error",Error)
         .pipe(gulpif(argv.minifyhtml || (!dev && argv.minifyhtml!==false),
                      gulpif('*.html',htmlmin({collapseWhitespace: true}))))
-        .pipe(gulp.dest(buildDir));
+        .on("error",Error)
+        .pipe(gulp.dest(buildDir))
+        .on("error",Error)
+        .on("end",function() {
+            if(error)
+                this.emit("error",error);
+        });
 }
 
 // return html code to included required scripts
@@ -250,7 +270,7 @@ function AddStyles(org,match) {
     return styles.join("\n");
 }
 
-// display error nicely and end the stream
+// display error nicely
 function HandleError(err) {
     console.log('[Compilation Error]');
     if(err.plugin)
@@ -260,6 +280,11 @@ function HandleError(err) {
     console.log('error: ' + err.message + '\n');
     if(err.codeFrame)
         console.log(err.codeFrame);
+}
+
+// display error nicely and end the stream
+function HandleErrorEnd(err) {
+    HandleError.call(this,err);
     this.emit("end");
 }
 
@@ -274,7 +299,7 @@ gulp.task("build-html",function(callback) {
             base: srcDir
         }))
         .on("error",function(err) {
-            HandleError.call(this,err);
+            HandleErrorEnd.call(this,err);
         })
     ).on("end",callback);
 });
@@ -292,7 +317,7 @@ gulp.task("build-manifest",function(callback) {
             changeExt: changeExt
         }))
         .on("error",function(err) {
-            HandleError.call(this,err);
+            HandleErrorEnd.call(this,err);
         })
     ).on("end",callback);
 });
@@ -318,17 +343,23 @@ function FilterUsed() {
 }
 
 // build project files on watch
-gulp.task("build-code-prj",function() {
-    return ResolveOutput(ResolveInput(gulp.src(prjCodeGlobs)
+gulp.task("build-code-prj",function(callback) {
+    ResolveOutput(ResolveInput(gulp.src(prjCodeGlobs)
         .pipe(FilterUsed())
-    ));
+        ).on("error",function(err) {
+            HandleError.call(this,err);
+        })
+    ).on("end",callback);
 });
 
 // build weh files on watch
 gulp.task("build-code-weh",function() {
     return ResolveOutput(ResolveInput(gulp.src(wehCodeGlobs)
         .pipe(FilterUsed())
-    ));
+        ).on("error",function(err) {
+            HandleError.call(this,err);
+        })
+    ).on("end",callback);
 });
 
 // erase build directory
