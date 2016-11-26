@@ -40,6 +40,7 @@ const argv = require('yargs').argv;
 const path = require("path");
 const glob = require("glob");
 const through = require('through2');
+const exec = require('child_process').exec;
 
 if(process.env.wehCwd)
     process.chdir(process.env.wehCwd);
@@ -280,6 +281,11 @@ function HandleError(err) {
     console.log('error: ' + err.message + '\n');
     if(err.codeFrame)
         console.log(err.codeFrame);
+    if(argv.onerror)
+        exec(argv.onerror,function(error) {
+             if(error)
+                 console.warn("Could not execute onerror handle:",error.message);
+        });
 }
 
 // display error nicely and end the stream
@@ -473,6 +479,7 @@ gulp.task("help", function() {
         "  --concat/--no-concat: force HTML and CSS concatenation on/off, default is concatenation on prod builds",
         "  --ejsdata: one or several (separated by '"+path.delimiter+"') JSON files used as data source when compiling "+
             "EJS files",
+        "  --onerror <command>: execute a command (like playing a sound) on errors",
     ];
     console.log(help.join("\n"));
     process.exit(0);
