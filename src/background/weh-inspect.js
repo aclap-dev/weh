@@ -1,20 +1,34 @@
 weh.inspect = (function() {
 
-    console.info("weh:inspect listening");
-
     var inspectorId = null;
 
-    browser.runtime.onMessageExternal.addListener(function(request, sender, sendResponse) {
-        console.info("weh:inspect receive message",request,sender);
-        inspectorId = sender.id;
-        sendResponse({
-            type: "weh#pong",
-            version: 1,
-            manifest: browser.runtime.getManifest()
-        })
+    browser.runtime.onMessageExternal.addListener(function(message, sender, sendResponse) {
+        switch(message.type) {
+            case "weh#ping":
+                inspectorId = sender.id;
+                sendResponse({
+                    type: "weh#pong",
+                    version: 1,
+                    manifest: browser.runtime.getManifest(),
+                    monitorBgUi: exports.monitorBgUi
+                });
+                break;
+            case "weh#monitor-bgui":
+                exports.monitorBgUi = message.status;
+                break;
+        }
     });
 
-    return {
+    var exports = {
+        monitorBgUi: false,
+        send: function(message) {
+            if(!inspectorId)
+                return;
+            message.timestamp = Date.now();
+            browser.runtime.sendMessage(inspectorId,message);
+        }
     }
+
+    return exports;
 
 })();

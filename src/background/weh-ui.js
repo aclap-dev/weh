@@ -63,8 +63,15 @@ weh.ui = (function() {
 
 		panel.post = function(message) {
             try {
-                if(panel.open)
+                if(panel.open) {
                     port.postMessage(message);
+                    weh.inspect && weh.inspect.send({
+                        type: "weh#bgui",
+                        way: "bgui",
+                        panel: panel.name,
+                        message: message
+                    });
+                }
             } catch(e) {
                 /* Edge bug: port disconnect event not sent on panel closed */
                 panel.open = false;
@@ -72,6 +79,12 @@ weh.ui = (function() {
 		}
 
 		port.onMessage.addListener(function(message) {
+            !message.wehInspectIgnore && weh.inspect && weh.inspect.send({
+                type: "weh#bgui",
+                way: "uibg",
+                panel: panel.name,
+                message: message
+            });
 			switch(message.type) {
                 case "weh#on":
                     panel.open = true;
