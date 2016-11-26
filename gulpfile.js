@@ -359,7 +359,7 @@ gulp.task("build-code-prj",function(callback) {
 });
 
 // build weh files on watch
-gulp.task("build-code-weh",function() {
+gulp.task("build-code-weh",function(callback) {
     return ResolveOutput(ResolveInput(gulp.src(wehCodeGlobs)
         .pipe(FilterUsed())
         ).on("error",function(err) {
