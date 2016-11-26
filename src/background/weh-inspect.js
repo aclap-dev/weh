@@ -13,7 +13,7 @@ weh.inspect = (function() {
                     monitorBgUi: exports.monitorBgUi
                 });
                 break;
-            case "weh#monitor-bgui":
+            case "weh#inspect-bgui":
                 exports.monitorBgUi = message.status;
                 break;
         }
