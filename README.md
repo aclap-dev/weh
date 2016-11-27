@@ -352,3 +352,15 @@ class MyComponent extends React.Component {
 ```
 
 *weh* takes care of adding/removing the listener when the component is mounted/unmounted and delivering the message to the `onWehMessage` method.
+
+## debugging tools
+
+The *weh* toolkit includes an extension called *weh-inspector* which allows to:
+- monitor messages between the background and UI
+- read/write addon preferences
+- read add-on storage
+
+As of now, this tool is only available on Chrome and Opera, as Firefox currently lacks some APIs for the tool to operate.
+
+The *weh-inspector* is available as a template in the *weh* toolkit. As such, you can install it with `weh init --template weh-inspector --prjdir weh-inspector` and then load the generated extension into the browser like any regular weh addon.
+
