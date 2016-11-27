@@ -52,7 +52,11 @@ var srcDir = path.join(prjDir,argv.srcdir || "src");
 var locDir = path.join(prjDir,argv.locdir || "src/locales");
 var etcDir = path.join(prjDir,argv.etcdir || "etc");
 var template = argv.template || "skeleton";
-var wehBackgroundModules = ["core","inspect","prefs","ui","ajax"];
+
+var wehBackgroundModules = ["core"];
+if(argv.inspect!==false)
+    wehBackgroundModules.push("inspect");
+wehBackgroundModules.push("prefs","ui","ajax");
 
 var jsBanner = null, jsBannerData;
 
@@ -480,6 +484,7 @@ gulp.task("help", function() {
         "  --ejsdata: one or several (separated by '"+path.delimiter+"') JSON files used as data source when compiling "+
             "EJS files",
         "  --onerror <command>: execute a command (like playing a sound) on errors",
+        "  --no-inspect: do not allow this add-on to be accessed by weh inspector tools"
     ];
     console.log(help.join("\n"));
     process.exit(0);
