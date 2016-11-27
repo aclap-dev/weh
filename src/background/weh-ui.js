@@ -65,7 +65,7 @@ weh.ui = (function() {
             try {
                 if(panel.open) {
                     port.postMessage(message);
-                    weh.inspect && weh.inspect.send({
+                    weh.inspect && weh.inspect.monitorBgUi && weh.inspect.send({
                         type: "weh#bgui",
                         way: "bgui",
                         panel: panel.name,
@@ -79,7 +79,7 @@ weh.ui = (function() {
 		}
 
 		port.onMessage.addListener(function(message) {
-            !message.wehInspectIgnore && weh.inspect && weh.inspect.send({
+            !message.wehInspectIgnore && weh.inspect && weh.inspect.monitorBgUi && weh.inspect.send({
                 type: "weh#bgui",
                 way: "uibg",
                 panel: panel.name,
