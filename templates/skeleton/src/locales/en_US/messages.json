@@ -1,4 +1,7 @@
 {
+    "title": {
+        "message": "Weh Skeleton"
+    },
     "weh_prefs_label_myparam_string": {
         "message": "String parameter"
     },

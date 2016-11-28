@@ -28,6 +28,7 @@
     }
     , "options_page": "content/settings.html?panel=settings"
     , "permissions": [
-        "tabs"
+        "tabs",
+        "contextMenus"
     ]
 }
