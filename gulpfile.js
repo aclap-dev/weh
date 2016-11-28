@@ -151,6 +151,11 @@ var prjCodeGlobs = [path.join(srcDir,"**/*.{js,css,js.ejs,css.ejs,jsx,jsx.ejs,sc
 // files to be considered from weh
 var wehCodeGlobs = [path.join(__dirname,"src/{background,content,common}/*.{js,css,jsx}")];
 
+var wehAssetsGlobs = [
+    path.join(srcDir,"**/_assets/**/*"),
+    path.join(__dirname,"src/**/_assets/**/*")
+];
+
 // all potential input files, including vendor libraries
 var globs = [].concat(wehCodeGlobs,prjCodeGlobs,[
     "node_modules/react/dist/**/*.{js,css}",
@@ -357,7 +362,7 @@ gulp.task("build-manifest",function(callback) {
 
 // build assets: input files that need to be processed but discovered in html nor manifest
 gulp.task("build-assets",function(callback) {
-    return ResolveOutput(ResolveInput(SrcExtend(path.join(srcDir,"**/_assets/**/*"))));
+    return ResolveOutput(ResolveInput(SrcExtend(wehAssetsGlobs)));
 });
 
 // copy locale files
@@ -411,7 +416,7 @@ gulp.task("build",[
 // watch for changes and rebuild what's needed
 gulp.task("watch",function() {
     gulp.watch(path.join(locDir,"**/*"), ["build-locales"]);
-    gulp.watch(path.join(srcDir,"**/_assets/**/*"), ["build-assets"]);
+    gulp.watch(wehAssetsGlobs, ["build-assets"]);
     gulp.watch(path.join(srcDir,"**/*.html"), ["build-html"]);
     gulp.watch(path.join(srcDir,"manifest.json"), ["build-manifest"]);
     gulp.watch(prjCodeGlobs,["build-code-prj"]);
