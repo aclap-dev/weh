@@ -106,9 +106,7 @@ weh.ui = (function() {
                     }
                     break;
                 case "weh#prefs":
-                    if(message.prefs)
-                        for(var k in message.prefs)
-                            weh.prefs[k] = message.prefs[k];
+                    message.prefs && weh.prefs.assign(message.prefs);
                     break;
                 case "weh#get-prefs": 
                     var prefs = {};
