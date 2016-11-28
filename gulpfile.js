@@ -53,10 +53,10 @@ var locDir = path.join(prjDir,argv.locdir || "src/locales");
 var etcDir = path.join(prjDir,argv.etcdir || "etc");
 var template = argv.template || "skeleton";
 
-var wehBackgroundModules = ["core"];
+var wehBackgroundModules = ["background/weh-core.js","common/weh-prefs.js"];
 if(argv.inspect!==false)
-    wehBackgroundModules.push("inspect");
-wehBackgroundModules.push("prefs","ui","ajax");
+    wehBackgroundModules.push("background/weh-inspect.js");
+wehBackgroundModules.push("background/weh-bg-prefs.js","background/weh-ui.js","background/weh-ajax.js");
 
 var jsBanner = null, jsBannerData;
 
@@ -147,7 +147,7 @@ function ResolveInput(stream) {
 var prjCodeGlobs = [path.join(srcDir,"**/*.{js,css,js.ejs,css.ejs,jsx,jsx.ejs,scss,scss.ejs,"+
     "ts,ts.ejs,coffee,coffee.ejs,less,less.ejs,styl,styl.ejs}")];
 // files to be considered from weh
-var wehCodeGlobs = [path.join(__dirname,"src/**/*.{js,css,jsx}")];
+var wehCodeGlobs = [path.join(__dirname,"src/{background,content,common}/*.{js,css,jsx}")];
 
 // all potential input files, including vendor libraries
 var globs = [].concat(wehCodeGlobs,prjCodeGlobs,[
@@ -227,8 +227,11 @@ function AddScripts(org,match) {
     function AddWehScripts() {
         if(argv.weh!==false) {
             scripts.push("<script src=\"weh-ct.js\"></script>");
-            if(argv["weh-prefs"]!==false)
+            if(argv["weh-prefs"]!==false) {
+                scripts.push("<script src=\"weh-prefs.js\"></script>");
+                scripts.push("<script src=\"weh-ct-prefs.js\"></script>");
                 scripts.push("<script src=\"weh-ct-react.jsx\"></script>");
+            }
         }
     }
     match.split(",").map(function(term) {
@@ -319,9 +322,7 @@ gulp.task("build-manifest",function(callback) {
     ResolveOutput(SrcExtend(path.join(srcDir,"manifest.json"))
         .pipe(manifest(sources,{
             background: {
-                initialScripts:  wehBackgroundModules.map(function(module) {
-                    return "background/weh-"+module+".js";
-                })
+                initialScripts:  wehBackgroundModules
             },
             noconcat: argv.concat===false || (dev && argv.concat!==false),
             changeExt: changeExt
