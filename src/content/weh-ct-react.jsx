@@ -34,6 +34,8 @@ class WehParams extends React.Component {
         this.handleCancel = this.handleCancel.bind(this);
         this.handleDefault = this.handleDefault.bind(this);
         this.handleSave = this.handleSave.bind(this);
+        this.onPrefs = this.onPrefs.bind(this);
+        this.onPrefsSpecs = this.onPrefsSpecs.bind(this);
         wehReactAttach(this,this.onWehMessage);
         this.state = {
             canCancel: false,
@@ -47,6 +49,8 @@ class WehParams extends React.Component {
     }
     
     componentDidMount() {
+        weh.prefs.on({pack:true},this.onPrefs);
+        weh.prefs.on({pack:true,specs:true},this.onPrefsSpecs);
         Object.assign(this.originalValues,weh.prefs);
         Object.assign(this.values,weh.prefs);
         Object.assign(this.specs,weh.prefSpecs);
@@ -59,7 +63,45 @@ class WehParams extends React.Component {
             prefs: prefs
         });
         this.updateCan();
+    }
 
+    componentWillUnmoun() {
+        weh.prefs.off(this.onPrefs);
+        weh.prefs.off(this.onPrefsSpecs);
+    }
+
+    onPrefs() {
+        this.originalValues = weh.prefs.getAll();
+        var newPrefs = weh.prefs.getAll();
+        var prefsKeys = {};
+        for(var k in newPrefs) {
+            prefsKeys[k] = 1;
+            delete this.invalid[k];
+            this.values[k] = this.originalValues[k];
+        }
+        this.values = newPrefs;
+        weh.postLocal({
+            type: "weh#reload-prefs",
+            prefs: prefsKeys
+        });
+        this.updateCan();
+    }
+
+    onPrefsSpecs() {
+        var newSpecs = weh.prefs.getSpecs();
+        var prefsKeys = {};
+        for(var k in newSpecs) {
+            prefsKeys[k] = 1;
+            delete this.invalid[k];
+            if(typeof this.originalValues[k]=="undefined")
+                this.originalValues[k] = newSpecs[k].defaultValue;
+            this.values[k] = this.originalValues[k];
+        }
+        this.specs = newSpecs;
+        weh.postLocal({
+            type: "weh#reload-prefs",
+            prefs: prefsKeys
+        });
     }
     
     getChildContext() {
@@ -132,15 +174,19 @@ class WehParams extends React.Component {
     }
     
     handleSave() {
+        weh.prefs.assign(this.values);
+        /*
         weh.post({
             type: "weh#prefs",
             prefs: this.values
         });
+        */
     }
 
     onWehMessage(message) {
         switch(message.type) {
             case "weh#updated-prefs-specs":
+                /*
                 var newSpecs = Object.assign({},weh.prefSpecs);
                 var prefs = {};
                 for(var k in newSpecs) {
@@ -153,8 +199,10 @@ class WehParams extends React.Component {
                     type: "weh#reload-prefs",
                     prefs: prefs
                 });
+                */
                 break;
             case "weh#updated-prefs":
+                /*
                 this.originalValues = Object.assign({},weh.prefs);
                 var newPrefs = Object.assign({},weh.prefs);
                 var prefs = {};
@@ -170,6 +218,7 @@ class WehParams extends React.Component {
                 });
                 this.updateCan();
                 break;
+        */
         }
     }
     
@@ -272,11 +321,11 @@ class WehParam extends React.Component {
         var value = this.context.getPref(this.prefName);
         if(typeof value=="undefined" && spec)
             value = spec.defaultValue;
+        this.originalValue = this.context.getOriginalPref(this.prefName);
         this.setState({
             spec: spec,
             value: value
         });
-        this.originalValue = this.context.getOriginalPref(this.prefName);
         if(spec)
             this.notify(this.prefName,value);
     }

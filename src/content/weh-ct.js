@@ -59,6 +59,7 @@
                     document.body.setAttribute("class",className);
                 }
                 return;
+            /*
             case "weh#prefs":
                 var changedPrefs = {};
                 var changed = false;
@@ -77,13 +78,48 @@
                     });
                 break;
             case "weh#prefs-specs":
-                for(var name in message.specs)
+                for(var name in message.specs) {
+                    if(!weh.prefSpecs[name]) {
+                        (function(name) {
+                            if(typeof weh.prefs[name]!="undefined")
+                                prefs[name] = weh.prefs[name];
+                            else
+                                prefs[name] = message.specs[name].defaultValue;
+                            Object.defineProperty(weh.prefs, name, {
+                                set: function(val) {
+                                    var oldVal = prefs[name];
+                                    if(oldVal==val)
+                                        return;
+                                    prefs[name] = val;
+                                    var terms = name.split(".");
+                                    var keys = [];
+                                    for(var i=terms.length;i>=0;i--)
+                                        keys.push(terms.slice(0,i).join("."));
+                                    keys.forEach(function(key) {
+                                        var listeners = prefsListeners[key];
+                                        if(listeners)
+                                            listeners.forEach(function(listener) {
+                                                try {
+                                                    listener(name,val,oldVal);
+                                                } catch(e) {}
+                                            });
+                                    });
+
+                                },
+                                get: function() {
+                                    return prefs[name]!==undefined ? prefs[name] : null;
+                                }
+                            });
+                        })(name);
+                    }
                     weh.prefSpecs[name] = message.specs[name];
+                }
                 weh.postLocal({
                     type: "weh#updated-prefs-specs" ,
                     specs: weh.prefSpecs
                 });
                 break;
+                */
         }
         NotifyListeners(message);
     });
@@ -93,8 +129,6 @@
     });
     
     var weh = {
-        prefs: {},
-        prefSpecs: {},
         post: function(message) {
             port.postMessage(message);
         },

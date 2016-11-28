@@ -15,12 +15,7 @@
     function Prefs() {
 
         this.$specs = {};
-        this.$values = null
-        try {
-            this.$values = JSON.parse(localStorage.getItem("prefs"));
-        } catch(e) {
-            console.error("weh: error loading prefs",e);
-        }
+        this.$values = null;
         if(!this.$values)
             this.$values = {};
         this.$listeners = {};
@@ -28,6 +23,45 @@
     }
 
     Prefs.prototype = {
+
+        notify: function(p,val,oldVal,spec) {
+            var self = this;
+            var terms = p.split(".");
+            var keys = [];
+            for(var i=terms.length;i>=0;i--)
+                keys.push(terms.slice(0,i).join("."));
+            keys.forEach(function(key) {
+                var listeners = self.$listeners[key];
+                if(listeners)
+                    listeners.forEach(function(listener) {
+                        if(listener.specs!=spec)
+                            return;
+                        if(!listener.pack)
+                            try {
+                                listener.callback(p,val,oldVal);
+                            } catch(e) {}
+                        else {
+                            listener.pack[p] = val;
+                            if(typeof listener.old[p]=="undefined")
+                                listener.old[p] = oldVal;
+                            if(listener.timer)
+                                clearTimeout(listener.timer);
+                            listener.timer = setTimeout(function() {
+                                delete listener.timer;
+                                var pack = listener.pack;
+                                var old = listener.old;
+                                listener.pack = {};
+                                listener.old = {};
+                                try {
+                                    listener.callback(pack,old);
+                                } catch(e) {}
+                            },0);
+
+                        }
+                    });
+            });
+
+        },
 
         declare: function(specs) {
 
@@ -57,41 +91,54 @@
                                 if(oldVal===val)
                                     return;
                                 self.$values[p] = val;
-                                localStorage.setItem("prefs",JSON.stringify(self.$values));
-                                var terms = p.split(".");
-                                var keys = [];
-                                for(var i=terms.length;i>=0;i--)
-                                    keys.push(terms.slice(0,i).join("."));
-                                keys.forEach(function(key) {
-                                    var listeners = self.$listeners[key];
-                                    if(listeners)
-                                        listeners.forEach(function(listener) {
-                                            try {
-                                                listener(p,val,oldVal);
-                                            } catch(e) {}
-                                        });
-                                });
+
+                                self.notify(p,val,oldVal,false);
+
                             },
                             get: function() {
-                                return self.$values[p]!==undefined ? self.$values[p] : null;
+                                return self.$values[p]!==undefined ? self.$values[p] :
+                                    (self.$specs[p] && self.$specs[p].defaultValue || undefined);
                             }
                         });
                     })(spec.name);
 
+                var oldSpecs = self.$specs[spec.name];
                 self.$specs[spec.name] = spec;
                 if(typeof self.$values[spec.name]=="undefined")
                     self.$values[spec.name] = spec.defaultValue;
+
+                self.notify(spec.name,spec,oldSpecs,true);
             });
 
         },
 
-        on: function(pref,callback) {
+        on: function() {
+            var pref = "", options = {}, argIndex = 0;
+            if(typeof arguments[argIndex]=="string")
+                pref = arguments[argIndex++];
+            if(typeof arguments[argIndex]=="object")
+                options = arguments[argIndex++];
+            var callback = arguments[argIndex];
+            var pack = !!options.pack;
+
             if(!this.$listeners[pref])
                 this.$listeners[pref] = [];
-            this.$listeners[pref].push(callback);
+            var handler = {
+                callback: callback,
+                specs: !!options.specs
+            }
+            if(pack) {
+                handler.pack = {};
+                handler.old = {};
+            }
+            this.$listeners[pref].push(handler);
         },
 
-        off: function(pref,callback) {
+        off: function() {
+            var pref = "", argIndex = 0;
+            if(typeof arguments[argIndex]=="string")
+                pref = arguments[argIndex++];
+            var callback = arguments[argIndex];
             var listeners = this.$listeners[pref];
             if(!listeners)
                 return;
@@ -109,13 +156,11 @@
         },
 
         assign: function(prefs) {
-            console.info("prefs.assign",prefs);
             for(var k in prefs)
                 this[k] = prefs[k];
         }
 
     }
-
 
     weh.prefs = new Prefs();
 
