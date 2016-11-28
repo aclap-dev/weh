@@ -41,6 +41,7 @@ const path = require("path");
 const glob = require("glob");
 const through = require('through2');
 const exec = require('child_process').exec;
+const File = gutil.File;
 
 if(process.env.wehCwd)
     process.chdir(process.env.wehCwd);
@@ -52,6 +53,7 @@ var srcDir = path.join(prjDir,argv.srcdir || "src");
 var locDir = path.join(prjDir,argv.locdir || "src/locales");
 var etcDir = path.join(prjDir,argv.etcdir || "etc");
 var template = argv.template || "skeleton";
+var resourceMap = {};
 
 var wehBackgroundModules = ["background/weh-core.js","common/weh-prefs.js"];
 if(argv.inspect!==false)
@@ -182,6 +184,24 @@ var changeExt = {
     ".styl": ".css"
 }
 
+// use resource pathes discovered in HTML processing when writing target file
+function RelocateHtmlResources() {
+    return through.obj(function (file, enc, callback) {
+        var self = this;
+        var retarget = resourceMap[path.basename(file.path)];
+        if(retarget)
+            retarget.forEach(function(target) {
+                self.push(new File({
+                    path: target,
+                    contents: file.contents
+                }));
+            });
+        else
+            this.push(file);
+        callback();
+    });
+}
+
 // processing output files for minification
 function ResolveOutput(stream) {
     var error = null;
@@ -207,6 +227,7 @@ function ResolveOutput(stream) {
         .pipe(gulpif(argv.minifyhtml || (!dev && argv.minifyhtml!==false),
                      gulpif('*.html',htmlmin({collapseWhitespace: true}))))
         .on("error",Error)
+        .pipe(RelocateHtmlResources())
         .pipe(gulp.dest(buildDir))
         .on("error",Error)
         .on("end",function() {
@@ -309,7 +330,8 @@ gulp.task("build-html",function(callback) {
         .pipe(userefWeh(sources,{
             noconcat: argv.concat===false || (dev && argv.concat!==false),
             changeExt: changeExt,
-            base: srcDir
+            base: srcDir,
+            map: resourceMap
         }))
         .on("error",function(err) {
             HandleErrorEnd.call(this,err);

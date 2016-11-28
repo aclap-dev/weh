@@ -128,9 +128,16 @@ module.exports = function () {
                         .pipe(gulpif(!options.noconcat,concat(oName)))
                         .pipe(through.obj(function(file,enc,cb) {
                             var scriptFile = fileScriptMap[file.path];
-
+                            var targetName = path.join(relDir,options.noconcat ? scriptFile : oName);
+                            if(options.map) {
+                                var baseName = path.basename(file.path);
+                                if(!options.map[baseName])
+                                    options.map[baseName] = [];
+                                if(options.map[baseName].indexOf(targetName)<0)
+                                    options.map[baseName].push(targetName);
+                            }
                             self.push(new File({
-                                path: path.join(relDir,options.noconcat ? scriptFile : oName),
+                                path: targetName,
                                 contents: file.contents
                             }));
 

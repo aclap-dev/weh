@@ -80,6 +80,8 @@ module.exports = function () {
 
         var self = this;
         var processCount = 1;
+        var baseDir = path.dirname(file.path);
+        var relDir = path.dirname(path.relative(baseDir,file.path));
 
         function Done() {
             if(--processCount==0)
@@ -109,10 +111,20 @@ module.exports = function () {
                 })
                 .pipe(gulpif(!options.noconcat,concat(bundle)))
                 .pipe(through.obj(function(file,enc,cb) {
+                    var scriptFile = fileScriptMap[file.path];
+                    var targetName = path.join(relDir,options.noconcat ? scriptFile : bundle);
+                    if(options.map) {
+                        var baseName = path.basename(file.path);
+                        if(!options.map[baseName])
+                            options.map[baseName] = [];
+                        if(options.map[baseName].indexOf(targetName)<0)
+                            options.map[baseName].push(targetName);
+                    }
                     self.push(new File({
-                        path: options.noconcat ? fileScriptMap[file.path] : bundle,
+                        path: targetName,
                         contents: file.contents
                     }));
+
                     cb();
                     Done();
                 }));
