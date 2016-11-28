@@ -230,10 +230,13 @@ a {
                 list-style: none;
 
                 .storage-item-value {
-                    margin-left: 30px;
+                    display: table-cell;
                 }
 
                 .storage-item-name {
+                    display: table-cell;
+                    vertical-align: middle;
+                    padding-right: 25px;
                     font-style: italic;
                 }
             }
