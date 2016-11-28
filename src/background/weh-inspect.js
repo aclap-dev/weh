@@ -20,7 +20,6 @@ weh.inspect = (function() {
             case "weh#get-storage":
                 inspectorId = sender.id;
                 GetStorageData(function(data) {
-                    console.info("storage",data);
                     exports.send({
                         type: "weh#storage",
                         storage: data
@@ -66,7 +65,7 @@ weh.inspect = (function() {
             }
         });
         ["local","sync","managed"].forEach(function(which) {
-            var storage = browser.storage[which];
+            var storage = browser.storage && browser.storage[which];
             if(storage) {
                 count++;
                 storage.get(null,function(items) {
