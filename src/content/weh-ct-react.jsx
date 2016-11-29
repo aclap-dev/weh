@@ -36,7 +36,6 @@ class WehParams extends React.Component {
         this.handleSave = this.handleSave.bind(this);
         this.onPrefs = this.onPrefs.bind(this);
         this.onPrefsSpecs = this.onPrefsSpecs.bind(this);
-        wehReactAttach(this,this.onWehMessage);
         this.state = {
             canCancel: false,
             canDefault: false,
@@ -175,53 +174,8 @@ class WehParams extends React.Component {
     
     handleSave() {
         weh.prefs.assign(this.values);
-        /*
-        weh.post({
-            type: "weh#prefs",
-            prefs: this.values
-        });
-        */
     }
 
-    onWehMessage(message) {
-        switch(message.type) {
-            case "weh#updated-prefs-specs":
-                /*
-                var newSpecs = Object.assign({},weh.prefSpecs);
-                var prefs = {};
-                for(var k in newSpecs) {
-                    prefs[k] = 1;
-                    delete this.invalid[k];
-                    this.values[k] = this.originalValues[k];
-                }
-                this.specs = newSpecs;
-                weh.postLocal({
-                    type: "weh#reload-prefs",
-                    prefs: prefs
-                });
-                */
-                break;
-            case "weh#updated-prefs":
-                /*
-                this.originalValues = Object.assign({},weh.prefs);
-                var newPrefs = Object.assign({},weh.prefs);
-                var prefs = {};
-                for(var k in newPrefs) {
-                    prefs[k] = 1;
-                    delete this.invalid[k];
-                    this.values[k] = this.originalValues[k];
-                }
-                this.values = newPrefs;
-                weh.postLocal({
-                    type: "weh#reload-prefs",
-                    prefs: prefs
-                });
-                this.updateCan();
-                break;
-        */
-        }
-    }
-    
     updateCan() {
         var state = {
             canCancel: false,
