@@ -61,7 +61,8 @@ module.exports = function () {
                    return false
                 return true;
             }))
-                console.warn("gulp-webext-manifest: No handler found for",script);
+                if((options.ignoreMissing || []).indexOf(script)<0)
+                    console.warn("gulp-webext-manifest: No handler found for",script);
         });
 
         return {
