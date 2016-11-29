@@ -55,7 +55,7 @@ var etcDir = path.join(prjDir,argv.etcdir || "etc");
 var template = argv.template || "skeleton";
 var resourceMap = {};
 
-var wehBackgroundModules = ["background/weh-core.js","common/weh-prefs.js"];
+var wehBackgroundModules = ["background/weh-core.js","common/weh-prefs.js","common/weh-i18n.js"];
 if(argv.inspect!==false)
     wehBackgroundModules.push("background/weh-inspect.js");
 wehBackgroundModules.push("background/weh-bg-prefs.js","background/weh-ui.js","background/weh-ajax.js");
@@ -253,6 +253,7 @@ function AddScripts(org,match) {
     function AddWehScripts() {
         if(argv.weh!==false) {
             scripts.push("<script src=\"weh-ct.js\"></script>");
+            scripts.push("<script src=\"weh-i18n.js\"></script>");
             if(argv["weh-prefs"]!==false) {
                 scripts.push("<script src=\"weh-prefs.js\"></script>");
                 scripts.push("<script src=\"weh-ct-prefs.js\"></script>");

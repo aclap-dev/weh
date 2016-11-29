@@ -32,6 +32,5 @@
         return false;
     }
 
-    weh._ = browser.i18n.getMessage;
 })();
 
