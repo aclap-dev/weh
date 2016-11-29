@@ -364,3 +364,12 @@ As of now, this tool is only available on Chrome and Opera, as Firefox currently
 
 The *weh-inspector* is available as a template in the *weh* toolkit. As such, you can install it with `weh init --template weh-inspector --prjdir weh-inspector` and then load the generated extension into the browser like any regular weh addon.
 
+## i18n
+
+*weh* provides some utilities for dealing with locales.
+
+Instead of `browser.i18n.getMessage()`, you should use `weh._()`, with the same parameters:
+- it's shorter
+- it automatically turns character `'-'` into `'_'` in string tags while leaving a warning in the console
+- more important: it allows overwriting some or all locale strings. Whenever a call is made to `weh._()`, the library first searches for a storage-based translation for this tag. If not found, it uses the default string defined in `_locales/<locale>/messages.json`. By default, *weh* provides a user interface page for the user to edit locale strings. It is up to the add-on developer to write the code to centralize the user-generated translations on a server, so that it can be shared amongst all users.
+
