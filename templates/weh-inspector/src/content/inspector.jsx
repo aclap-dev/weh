@@ -16,9 +16,14 @@ class AddonSelector extends React.Component {
         this.selectElement = selectElement;
         var self = this;
         $(document).ready(function() {
-            $(selectElement).select2({
-                minimumResultsForSearch: Infinity
-            }).val(self.props.addonId || "").on("change",self.pickAddon);
+            var plugin = $(selectElement).select2({
+                minimumResultsForSearch: Infinity,
+                placeholder: weh._("pick_addon")
+            }).on("change",self.pickAddon);
+            if(self.props.addonId) {
+                console.info("set select2",self.props.addonId);
+                plugin.val(self.props.addonId)
+            }
         });
     }
 
@@ -28,17 +33,13 @@ class AddonSelector extends React.Component {
                     {addon.name}
             </option>
         );
-        if(!this.props.addon)
-            items.unshift(
-                <option key="" value="">
-                        {weh._("pick_addon")}
-                </option>
-            );
+        items.unshift(
+            <option key="" value=""></option>
+        );
         return (
             <div className="addon-selector">
                 <select
-                    ref={(element) => { this.install(element) }}
-                    >
+                    ref={(element) => { this.install(element) }}>
                     {items}
                 </select>
                 <div className="commands">
