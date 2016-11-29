@@ -16,6 +16,11 @@
 
     const substRe = new RegExp("^(|.*?[^\\\\])(?:\\$)(.*?[^\\\\])(?:\\$)(.*)");
 
+    function Load() {
+        customStrings = window.localStorage.getItem("wehI18nCustom") || {};
+    }
+    Load();
+
     function GetMessage(messageName,substitutions) {
         if(/-/.test(messageName)) {
             var fixedName = messageName.replace(/-/g,"_");
@@ -54,15 +59,7 @@
 
     weh.i18n = {
         getMessage: GetMessage,
-        assignCustom: function(custom) {
-            Object.assign(customStrings,custom);
-        },
-        resetCustom: function() {
-            customStrings = {};
-        },
-        getCustom: function() {
-            return customStrings;
-        }
+        reload: Load
     }
     weh._ = weh.i18n.getMessage;
 
