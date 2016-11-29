@@ -17,7 +17,11 @@
     const substRe = new RegExp("^(|.*?[^\\\\])(?:\\$)(.*?[^\\\\])(?:\\$)(.*)");
 
     function Load() {
-        customStrings = window.localStorage.getItem("wehI18nCustom") || {};
+        try {
+            customStrings = JSON.parse(window.localStorage.getItem("wehI18nCustom")) || {};
+        } catch(e) {
+            customStrings = {};
+        }
     }
     Load();
 
