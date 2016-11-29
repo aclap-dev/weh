@@ -257,14 +257,14 @@ function AddScripts(org,match) {
         if(argv.weh!==false) {
             scripts.push("<script src=\"weh-ct.js\"></script>");
             scripts.push("<script src=\"weh-i18n.js\"></script>");
-            if(argv["weh-react"]!==false)
+            if(argv["react"]!==false)
                 scripts.push("<script src=\"weh-ct-react.jsx\"></script>");
-            if(argv["weh-prefs"]!==false) {
+            if(argv["prefs"]!==false) {
                 scripts.push("<script src=\"weh-prefs.js\"></script>");
                 scripts.push("<script src=\"weh-ct-prefs.js\"></script>");
                 scripts.push("<script src=\"weh-ct-react-prefs.jsx\"></script>");
             }
-            if(argv["weh-translator"]!==false)
+            if(argv["translator"]!==false)
                 scripts.push("<script src=\"weh-ct-react-translate.jsx\"></script>");
         }
     }
@@ -547,7 +547,9 @@ gulp.task("help", function() {
             "EJS files",
         "  --onerror <command>: execute a command (like playing a sound) on errors",
         "  --no-inspect: do not allow this add-on to be accessed by weh inspector tools",
-        "  --no-i18nkeys: do not generate the translation keys automatically"
+        "  --no-i18nkeys: do not generate the translation keys automatically",
+        "  --no-prefs: do not include preference editor module",
+        "  --no-translator: do not include locale editor module"
     ];
     console.log(help.join("\n"));
     process.exit(0);
