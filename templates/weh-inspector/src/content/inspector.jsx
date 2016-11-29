@@ -122,7 +122,7 @@ class MessagesTab extends React.Component {
             messages: [],
         }
         this.clearMessages = this.clearMessages.bind(this);
-        wehReactAttach(this,this.onWehMessage);
+        weh.react.attach(this,this.onWehMessage);
     }
 
     clearMessages() {
@@ -417,7 +417,7 @@ class App extends React.Component {
         this.addonControl = this.addonControl.bind(this);
         this.selectTab = this.selectTab.bind(this);
         this.changePref = this.changePref.bind(this);
-        wehReactAttach(this,this.onWehMessage);
+        weh.react.attach(this,this.onWehMessage);
     }
 
     onWehMessage(message) {

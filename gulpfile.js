@@ -257,11 +257,15 @@ function AddScripts(org,match) {
         if(argv.weh!==false) {
             scripts.push("<script src=\"weh-ct.js\"></script>");
             scripts.push("<script src=\"weh-i18n.js\"></script>");
+            if(argv["weh-react"]!==false)
+                scripts.push("<script src=\"weh-ct-react.jsx\"></script>");
             if(argv["weh-prefs"]!==false) {
                 scripts.push("<script src=\"weh-prefs.js\"></script>");
                 scripts.push("<script src=\"weh-ct-prefs.js\"></script>");
-                scripts.push("<script src=\"weh-ct-react.jsx\"></script>");
+                scripts.push("<script src=\"weh-ct-react-prefs.jsx\"></script>");
             }
+            if(argv["weh-translator"]!==false)
+                scripts.push("<script src=\"weh-ct-react-translate.jsx\"></script>");
         }
     }
     match.split(",").map(function(term) {

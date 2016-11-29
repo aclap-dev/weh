@@ -5,7 +5,7 @@ body {
 }
 
 #root {
-    width: 500px;
+    min-width: 500px;
 }
 
 .sample-panel {
@@ -23,4 +23,5 @@ body {
 .sample-toolbar a {
     float: right;
     cursor: pointer;
+    margin: 0 8px;
 }

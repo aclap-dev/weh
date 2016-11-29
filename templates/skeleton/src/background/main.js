@@ -7,12 +7,14 @@
 weh.ui.update("default",{
     type: "popup",
     onMessage: function(message) {
-        console.info("background default receives",message);
         switch(message.type) {
             case "open-settings":
                 weh.ui.close("default");
                 weh.ui.open("settings");
-                console.info("open-settings");
+                break;
+            case "open-translation":
+                weh.ui.close("default");
+                weh.ui.open("translation");
                 break;
         }
     }
@@ -25,10 +27,16 @@ weh.ui.update("default",{
 */
 weh.ui.update("settings",{
     type: "tab",
-    contentURL: "content/settings.html",
-    onMessage: function(message) {
-        console.info("background settings receives",message);
-    }
+    contentURL: "content/settings.html"
+});
+
+/* if you don't want custom translation in your add-on:
+   - delete the call below
+   - delete files src/content/manifest.* files
+*/
+weh.ui.update("translation",{
+    type: "tab",
+    contentURL: "content/translation.html",
 });
 
 /* if you don't need to activate the addon from the browser context menu,

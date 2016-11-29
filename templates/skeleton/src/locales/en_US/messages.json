@@ -39,6 +39,9 @@
     "settings": {
         "message": "Settings"
     },
+    "translation": {
+        "message": "Translation"
+    },
     
     "save": {
         "message": "Save"

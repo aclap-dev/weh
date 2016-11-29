@@ -23,6 +23,7 @@ ReactDOM.render (
     <div>
         <div className="sample-panel">{weh._("sample_panel_text")}</div>
         <div className="sample-toolbar">
+            <Link messageType={"open-translation"} label={"translation"}/>
             <Link messageType={"open-settings"} label={"settings"}/>
         </div>
     </div>,

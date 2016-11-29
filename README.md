@@ -343,7 +343,7 @@ If you go for ReactJS for building your user interface, you can defines componen
 class MyComponent extends React.Component {
     constructor(props) {
         super(props);
-        wehReactAttach(this,this.onWehMessage);
+        weh.react.attach(this,this.onWehMessage);
     }
     onWehMessage(message) {
         /* do something wxith the incoming message */

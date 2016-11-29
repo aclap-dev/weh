@@ -141,6 +141,12 @@ weh.ui = (function() {
                         });
                     }
                     break;
+                case "weh#get-i18n-keys":
+                    panel.post({
+                        type: "weh#i18n-keys",
+                        i18nKeys: weh.i18nKeys
+                    });
+                    break;
                 default:
 				    panel.options.onMessage(message,panel.post,panelName);
 			}
