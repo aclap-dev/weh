@@ -28,6 +28,7 @@ const typescript = require("gulp-typescript");
 const coffee = require("gulp-coffee");
 const less = require("gulp-less");
 const stylus = require("gulp-stylus");
+const gfile = require("gulp-file");
 const userefWeh = require("./gulp-useref-weh");
 const runSequence = require('run-sequence');
 const es2015 = require('babel-preset-es2015');
@@ -59,6 +60,8 @@ var wehBackgroundModules = ["background/weh-core.js","common/weh-prefs.js","comm
 if(argv.inspect!==false)
     wehBackgroundModules.push("background/weh-inspect.js");
 wehBackgroundModules.push("background/weh-bg-prefs.js","background/weh-ui.js","background/weh-ajax.js");
+if(argv.i18nkeys!==false)
+    wehBackgroundModules.push("background/weh-i18n-keys.js");
 
 var jsBanner = null, jsBannerData;
 
@@ -353,7 +356,8 @@ gulp.task("build-manifest",function(callback) {
                 initialScripts:  wehBackgroundModules
             },
             noconcat: argv.concat===false || (dev && argv.concat!==false),
-            changeExt: changeExt
+            changeExt: changeExt,
+            ignoreMissing: ["background/weh-i18n-keys.js"]
         }))
         .on("error",function(err) {
             HandleErrorEnd.call(this,err);
@@ -368,8 +372,33 @@ gulp.task("build-assets",function(callback) {
 
 // copy locale files
 gulp.task("build-locales",function() {
-    return gulp.src(path.join(locDir,"**/*"))
-        .pipe(gulp.dest(path.join(buildDir,"_locales")));
+    var localeKeys = {};
+    function LocaleKeys() {
+        return through.obj(function (file, enc, callback) {
+            try {
+                var json = JSON.parse(file.contents);
+                Object.keys(json).forEach(function(key) {
+                    localeKeys[key] = 1;
+                });
+            } catch(e) {
+                console.warn("File",file.path,"is not JSON",file.contents)
+            }
+            this.push(file);
+            callback();
+        });
+    }
+
+    return gulp.src(path.join(locDir,"**/*.json"))
+        .pipe(LocaleKeys())
+        .pipe(gulp.dest(path.join(buildDir,"_locales")))
+        .on("end",function() {
+            if(argv.i18nkeys!==false) {
+                var str = "/* generated automatically by weh */\nweh.i18nKeys="+
+                    JSON.stringify(Object.keys(localeKeys));
+                gfile('background/weh-i18n-keys.js', str, { src: true })
+                    .pipe(gulp.dest(path.join(buildDir)));
+            }
+        });
 });
 
 // filter to prevent unused file to be processed on watch
@@ -513,7 +542,8 @@ gulp.task("help", function() {
         "  --ejsdata: one or several (separated by '"+path.delimiter+"') JSON files used as data source when compiling "+
             "EJS files",
         "  --onerror <command>: execute a command (like playing a sound) on errors",
-        "  --no-inspect: do not allow this add-on to be accessed by weh inspector tools"
+        "  --no-inspect: do not allow this add-on to be accessed by weh inspector tools",
+        "  --no-i18nkeys: do not generate the translation keys automatically"
     ];
     console.log(help.join("\n"));
     process.exit(0);
