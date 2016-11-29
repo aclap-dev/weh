@@ -85,6 +85,16 @@ weh.inspect = (function() {
                 return;
             message.timestamp = Date.now();
             browser.runtime.sendMessage(inspectorId,message);
+        },
+        sendBgUi: function(message) {
+            if(!inspectorId)
+                return;
+            message.timestamp = Date.now();
+            message.type = "weh#bgui";
+            browser.runtime.sendMessage(inspectorId,message,function(response) {
+                if(!response || response.type!="weh#ok")
+                    exports.monitorBgUi = false;
+            });
         }
     }
 

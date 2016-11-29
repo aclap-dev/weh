@@ -116,6 +116,9 @@ browser.runtime.onMessageExternal.addListener(function(message, sender, sendResp
         case "weh#bgui":
             message.key = bguiIndex++;
             weh.ui.post("inspector",message);
+            sendResponse({
+                type: (addons[sender.id] && addons[sender.id].monitorBgUi) ? "weh#ok" : "weh#ko"
+            });
             break;
         case "weh#storage":
             weh.ui.post("inspector",message);
