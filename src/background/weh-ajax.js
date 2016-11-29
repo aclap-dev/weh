@@ -1,5 +1,5 @@
 /*
- * weh - WebExtensions Help
+ * weh - WebExtensions Helper
  *
  * @summary workflow and base code for developing WebExtensions browser add-ons
  * @author Michel Gutierrez
