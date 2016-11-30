@@ -1,11 +1,12 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 
 var spawn = require("child_process").spawn;
 
 var cwd = process.cwd();
 process.chdir(__dirname);
 
-var cmd = spawn("gulp", process.argv.slice(2) , {
+var gulpBin = process.platform=="win32" ? "gulp.cmd" : "gulp";
+var cmd = spawn(gulpBin, process.argv.slice(2) , {
     env: Object.assign({},process.env,{
         wehCwd: cwd
     })

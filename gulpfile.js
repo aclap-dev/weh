@@ -29,6 +29,7 @@ const coffee = require("gulp-coffee");
 const less = require("gulp-less");
 const stylus = require("gulp-stylus");
 const gfile = require("gulp-file");
+const lec = require('gulp-line-ending-corrector');
 const userefWeh = require("./gulp-useref-weh");
 const runSequence = require('run-sequence');
 const es2015 = require('babel-preset-es2015');
@@ -105,7 +106,8 @@ function SrcExtend(glob) {
             }))
         );
     });
-    return merge.apply(null,streams);
+    return merge.apply(null,streams)
+        .pipe(lec());
 }
 
 // process input files to handle various script and styles languages
