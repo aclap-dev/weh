@@ -1,3 +1,4 @@
 node_modules
 tmp
 /gulp-useref-weh/node_modules/
+/npm-debug.log

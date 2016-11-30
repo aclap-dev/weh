@@ -1,15 +1,18 @@
 {
   "name": "weh",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Toolkit for developing WebExtensions add-ons on Firefox, Chrome, Edge and Opera, using ReactJS for the UI",
   "keywords": [
     "webextensions",
     "add-on",
+    "browser extension",
+    "extension",
     "chrome",
     "firefox",
     "opera",
     "edge",
-    "reactjs"
+    "reactjs",
+    "react",
   ],
   "homepage": "https://github.com/mi-g/weh",
   "bugs": {
@@ -62,6 +65,5 @@
     "streamqueue": "^1.1.1",
     "typescript": "^2.0.10",
     "yargs": "^6.3.0"
-  },
-  "dependencies": {}
+  }
 }
