@@ -62,11 +62,7 @@
         }
         NotifyListeners(message);
     });
-        
-    port.postMessage({
-        type: "weh#on"
-    });
-    
+
     var weh = {
         post: function(message) {
             port.postMessage(message);

@@ -266,6 +266,7 @@ function AddScripts(org,match) {
             }
             if(argv["translator"]!==false)
                 scripts.push("<script src=\"weh-ct-react-translate.jsx\"></script>");
+            scripts.push("<script src=\"weh-ct-ready.js\"></script>");
         }
     }
     match.split(",").map(function(term) {
