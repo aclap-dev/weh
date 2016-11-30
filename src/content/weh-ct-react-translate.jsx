@@ -137,7 +137,8 @@ class WehTranslation extends React.Component {
 
     render() {
         var self = this;
-        var argPlaceHolders = new Array(9).fill(0).map((v,i) => {return "$arg"+(i+1)+"$"});
+        var maxArgs = 4; // should be 9 but this is a bug in Edge
+        var argPlaceHolders = new Array(maxArgs).fill("").map((v,i) => {return "$arg"+(i+1)+"$"});
         var originals = {};
         this.state.keys.forEach((key) => {
             originals[key] = browser.i18n.getMessage(key,argPlaceHolders);
