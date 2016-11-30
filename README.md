@@ -10,6 +10,21 @@ not to use this library.
 
 **weh**-generated extensions are compatible with Firefox, Chrome, Opera and Edge. You should of course maintain this compatibility in the code you add to your project.
 
+## install from npm
+
+```
+npm install -g weh gulp
+```
+
+### testing installation
+
+```
+weh init --prjdir myextension
+```
+
+You can now install your skeleton extension from the `myextension/build` directory as described 
+[here](#install-local).
+
 ## install from github
 
 ```
@@ -48,7 +63,7 @@ add `--no-watch` to the command line.
 
 Run `weh help` to see more command line options.
 
-## installing a local add-on into the browser
+## <a name="install-local"></a>installing a local add-on into the browser
 
 - on ***Firefox***: visit `about:debugging`, click *Load Temporary Addon*, select the `myextension/build/manifest.json` file
 - on ***Chrome***: visit `chrome://extension`, check *Developer mode*, click *Load unpacked extension*, select the `myextension/build` directory
