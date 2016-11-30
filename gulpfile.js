@@ -107,7 +107,7 @@ function SrcExtend(glob) {
         );
     });
     return merge.apply(null,streams)
-        .pipe(lec());
+        .pipe(gulpif('*.html',lec()));
 }
 
 // process input files to handle various script and styles languages
