@@ -32,7 +32,7 @@
             messageName = fixedName;
         }
         var custom = customStrings[messageName];
-        if(custom) {
+        if(custom && custom.message.length>0) {
             if(!Array.isArray(substitutions))
                 substitutions = [ substitutions ];
             var substs = {};
