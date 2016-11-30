@@ -32,9 +32,9 @@ class WehParams extends React.Component {
     componentDidMount() {
         weh.prefs.on({pack:true},this.onPrefs);
         weh.prefs.on({pack:true,specs:true},this.onPrefsSpecs);
-        Object.assign(this.originalValues,weh.prefs);
-        Object.assign(this.values,weh.prefs);
-        Object.assign(this.specs,weh.prefSpecs);
+        Object.assign(this.originalValues,weh.prefs.getAll());
+        Object.assign(this.values,weh.prefs.getAll());
+        Object.assign(this.specs,weh.prefs.getSpecs());
         var prefs = {};
         Object.keys(this.values).forEach(function(prefName) {
             prefs[prefName] = 1;
