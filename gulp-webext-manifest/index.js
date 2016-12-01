@@ -146,6 +146,10 @@ module.exports = function () {
                 manifest.background.scripts = options.background.initialScripts.concat(manifest.background.scripts);
             var bundle = options.background && options.background.target || "background/background.js";
             manifest.background.scripts = HandleAssets(manifest.background.scripts,bundle);
+            if(options.background && options.background.replaceScriptNames)
+                manifest.background.scripts.forEach(function(scriptName,index) {
+                    manifest.background.scripts[index] = options.background.replaceScriptNames[scriptName] || manifest.background.scripts[index];
+                });
         }
 
         if(Array.isArray(manifest.content_scripts))
