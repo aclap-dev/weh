@@ -83,8 +83,12 @@
                 spec.label = spec.label || weh._("weh_prefs_label_"+localeName) || spec.name;
                 spec.description = spec.description || weh._("weh_prefs_description_"+localeName) || "";
 
+                var prevValue = null;
+
                 if(!self.$specs[spec.name])
                     (function(p) {
+                        if(typeof self[spec.name]!=="undefined")
+                            prevValue = self[spec.name];
                         Object.defineProperty(self, p, {
                             set: function(val) {
                                 var oldVal = self.$values[p];
@@ -104,7 +108,9 @@
 
                 var oldSpecs = self.$specs[spec.name];
                 self.$specs[spec.name] = spec;
-                if(typeof self.$values[spec.name]=="undefined")
+                if(prevValue!==null)
+                    self.$values[spec.name] = prevValue;
+                else if(typeof self.$values[spec.name]=="undefined")
                     self.$values[spec.name] = spec.defaultValue;
 
                 self.notify(spec.name,spec,oldSpecs,true);
