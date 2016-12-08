@@ -13,6 +13,9 @@
 weh.inspect = (function() {
 
     var inspectorId = null;
+    
+    if(!browser.runtime.onMessageExternal)
+        return null;
 
     browser.runtime.onMessageExternal.addListener(function(message, sender, sendResponse) {
         switch(message.type) {
