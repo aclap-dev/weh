@@ -97,6 +97,14 @@
             for(var i=listeners[type].length-1;i>=0;i--)
                 if(listeners[type][i]==handler)
                     listeners[type].splice(i,1);
+        },
+        copyToClipboard(data,mimeType) {
+            mimeType = mimeType || "text/plain";
+            document.oncopy = function(event) {
+                event.clipboardData.setData(mimeType, data);
+                event.preventDefault();
+            };
+            document.execCommand("Copy", false, null);
         }
     }
 
