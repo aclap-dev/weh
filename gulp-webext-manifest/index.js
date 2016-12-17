@@ -89,7 +89,7 @@ module.exports = function () {
                 callback();
         }
 
-        function HandleAssets(scripts) {
+        function HandleAssets(scripts,bundle) {
             if(!Array.isArray(scripts))
                 scripts = [ scripts ];
 
