@@ -8,6 +8,7 @@ const streamqueue = require('streamqueue');
 const glob = require("glob");
 const gulpif = require("gulp-if");
 const path = require("path");
+const fs = require("fs");
 const gutil = require('gulp-util');
 const File = gutil.File;
 
@@ -61,7 +62,9 @@ module.exports = function () {
                    return false
                 return true;
             }))
-                if((options.ignoreMissing || []).indexOf(script)<0)
+                if(!(options.ignoreMissing || []).every(function(pattern) {
+                    return minimatch(script,pattern);
+                }))
                     console.warn("gulp-webext-manifest: No handler found for",script);
         });
 
@@ -89,9 +92,10 @@ module.exports = function () {
                 callback();
         }
 
-        function HandleAssets(scripts,bundle) {
+        function HandleAssets(scripts,bundle,noconcat) {
             if(!Array.isArray(scripts))
                 scripts = [ scripts ];
+            noconcat = noconcat || options.noconcat;
 
             var streamsObj = GetAssetStreams(scripts);
             var streams = streamsObj.assetStreams;
@@ -99,7 +103,7 @@ module.exports = function () {
             for(var key in streamsObj.fileScriptMap)
                 fileScriptMap[ChangeExt(key)] = ChangeExt(streamsObj.fileScriptMap[key]);
 
-            if(options.noconcat)
+            if(noconcat)
                 processCount += streams.length;
             else
                 processCount++;
@@ -110,10 +114,10 @@ module.exports = function () {
                     self.emit("error",err);
                     this.emit("end");
                 })
-                .pipe(gulpif(!options.noconcat,concat(bundle)))
+                .pipe(gulpif(!noconcat,concat(bundle)))
                 .pipe(through.obj(function(file,enc,cb) {
                     var scriptFile = fileScriptMap[file.path];
-                    var targetName = path.join(relDir,options.noconcat ? scriptFile : bundle);
+                    var targetName = path.join(relDir,noconcat ? scriptFile : bundle);
                     if(options.map) {
                         var baseName = path.basename(file.path);
                         if(!options.map[baseName])
@@ -130,7 +134,7 @@ module.exports = function () {
                     Done();
                 }));
 
-            if(!options.noconcat)
+            if(!noconcat)
                 return [bundle];
             else
                 return scripts.map(function(script) {
@@ -166,6 +170,35 @@ module.exports = function () {
                 }
             });
 
+        if(Array.isArray(manifest.web_accessible_resources)) {
+            var allFiles = {};
+            function GetFiles(dir,asDir) {
+                var files = glob.sync(path.join(dir,"*"));
+                files.forEach(function(file) {
+                    if(fs.lstatSync(file).isDirectory()) {
+                        var baseName = path.basename(file);
+                        if(baseName=="_assets")
+                            GetFiles(file,asDir);
+                        else
+                            GetFiles(file,path.join(asDir,baseName));
+                    } else
+                        allFiles[path.join(asDir,path.basename(file))] = file;
+                });
+            }
+            GetFiles(baseDir,"");
+            var resources = {};
+            manifest.web_accessible_resources.forEach(function(resource) {
+                var files = {};
+                for(var file in allFiles)
+                    if(minimatch(file,resource))
+                        files[file] = allFiles[file];
+                for(var file in files) {
+                    var procFile = HandleAssets(file,"foo",true);
+                    resources[procFile] = 1;
+                }
+            });
+            manifest.web_accessible_resources = Object.keys(resources);
+        }
 
         var appBasePath = path.dirname(file.path);
 		var cwd = process.cwd();
