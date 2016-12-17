@@ -359,7 +359,7 @@ class WehParam extends React.Component {
     formGroupClass() {
         if(!this.isValid())
             return "has-error";
-        else if(this.state.value !== this.originalValue)
+        else if(this.state.value != this.originalValue)
             return "has-success";
         else if(this.state.value != this.state.spec.defaultValue)
             return "has-warning";
