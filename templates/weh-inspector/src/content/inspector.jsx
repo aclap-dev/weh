@@ -5,7 +5,13 @@ class AddonSelector extends React.Component {
         super(props);
         this.selectElement = null;
         this.pickAddon = this.pickAddon.bind(this);
-        this.install = this.install.bind(this);
+    }
+
+    componentDidUpdate() {
+        if(this.oldSelectElement!==this.refs.addonSelector) {
+            this.oldSelectElement = this.refs.addonSelector;
+            this.install(this.refs.addonSelector);
+        }
     }
 
     pickAddon(event) {
@@ -39,7 +45,7 @@ class AddonSelector extends React.Component {
         return (
             <div className="addon-selector">
                 <select
-                    ref={(element) => { this.install(element) }}>
+                    ref="addonSelector">
                     {items}
                 </select>
                 <div className="commands">
@@ -91,8 +97,14 @@ class AddonControl extends React.Component {
 
 class Message extends React.Component {
 
+    componentDidUpdate() {
+        if(this.oldElement!==this.refs.element) {
+            this.oldElement = this.refs.element;
+            this.install(this.refs.element);
+        }
+    }
+
     install(element) {
-        this.element = element;
         var self = this;
         $(document).ready(function() {
             $(element).jsonViewer(self.props.message.message, {collapsed: true});
@@ -108,7 +120,7 @@ class Message extends React.Component {
                 <td>{message.panel}</td>
                 <td>{weh._("message_way_"+message.way)}</td>
                 <td>{this.props.message.message.type || "???"}</td>
-                <td><span ref={(element) => { this.install(element) }}></span></td>
+                <td><span ref="element"></span></td>
             </tr>
         )
     }
@@ -205,9 +217,14 @@ class StorageTab extends React.Component {
 
     install(element,store,key) {
         var self = this;
-        $(document).ready(function() {
-            $(element).jsonViewer(self.props.storage[store][key], {collapsed: true});
-        });
+        this.storeElements = this.storeElements || {};
+        if(this.storeElements[store]!==element) {
+            this.storeElements[store] = element;
+            $(document).ready(function() {
+                if(self.props.storage[store])
+                    $(element).jsonViewer(self.props.storage[store][key], {collapsed: true});
+            });
+        }
     }
 
     render() {
