@@ -680,3 +680,5 @@ ReactDOM.render (
     </div>,
     document.getElementById('root')
 )
+
+weh.setPageTitle(weh._("weh_inspector"));
