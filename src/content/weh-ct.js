@@ -98,13 +98,23 @@
                 if(listeners[type][i]==handler)
                     listeners[type].splice(i,1);
         },
-        copyToClipboard(data,mimeType) {
+        copyToClipboard: function(data,mimeType) {
             mimeType = mimeType || "text/plain";
             document.oncopy = function(event) {
                 event.clipboardData.setData(mimeType, data);
                 event.preventDefault();
             };
             document.execCommand("Copy", false, null);
+        },
+        setPageTitle: function(title) {
+            var titleElement = document.querySelector("head title");
+            if(!titleElement) {
+                titleElement = document.createElement("title");
+                document.head.appendChild(titleElement);
+            } else
+                while(titleElement.firstChild)
+                    titleElement.removeChild(titleElement.firstChild);
+            titleElement.appendChild(document.createTextNode(title));
         }
     }
 
