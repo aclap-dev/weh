@@ -83,6 +83,17 @@
                 spec.label = spec.label || weh._("weh_prefs_label_"+localeName) || spec.name;
                 spec.description = spec.description || weh._("weh_prefs_description_"+localeName) || "";
 
+                if(spec.type == "choice")
+                    spec.choices = (spec.choices || []).map(function(choice) {
+                        if(typeof choice=="object")
+                            return choice;
+                        var localeChoice = choice.replace(/[^0-9a-zA-Z_]/g,'_');
+                        return {
+                            value: choice,
+                            name: weh._("weh_prefs_"+localeName+"_option_"+localeChoice) || choice
+                        }
+                    });
+
                 var prevValue = null;
 
                 if(!self.$specs[spec.name])
