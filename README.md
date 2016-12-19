@@ -2,11 +2,18 @@
 
 **weh** stands for *WebExtensions Helper*.
 
-This tool speeds up browser add-ons development by providing a workflow that generates automatically a build extension directory
-you can directly install into your browser.
+This toolkit speeds up browser add-ons development by providing a number of facilities for WebExtensions-based (Firefox, Chrome, Opera and Edge) extensions.
 
-**weh** also provides source code that goes into your addon to ease a number of common tasks like managing preferences and two-way communications between the extension background and its user interface content pages. Developing the user interface using ReactJS is simplified but you may choose 
+This is not a framework in the sense that the developer does not have to embrace all the provided utilities and there is not many architectural constraints to follow in order to take benefit of the tool.
+
+The build system generates automatically a directory you can directly install into your browser, compiling
+automatically CoffeeScript, TypeScript and JSX to Javascript, Sass, Less and Stylus to CSS, optionally concatenating and minifying scripts, styles and HTML.
+
+**weh** also provides some libraries that goes into your addon to ease a number of common tasks like managing preferences and two-way communications between the extension background and its user interface content pages, 
+providing a way for the end-user to customize any string in the add-on user interface. Developing the user interface using ReactJS is also simplified but you may choose 
 not to use this library.
+
+In addition, an inspector application (under the form of a **weh**-based extension) is provided to monitor other **weh** extensions in real-time.
 
 **weh**-generated extensions are compatible with Firefox, Chrome, Opera and Edge. You should of course maintain this compatibility in the code you add to your project.
 
