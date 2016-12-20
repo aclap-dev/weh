@@ -231,7 +231,7 @@ For each parameter, you must provide at least `name`, `type` and `defaultValue`.
 `choice`. A specific preference parameter can then be accessed, as read or write, through `weh.prefs["parameter name"]`.
 
 You can install preferences listeners using `weh.prefs.on(whatToWatch,callback)` and uninstall listeners using `weh.prefs.off` with the same parameters. `whatToWatch` uses a dotted notation. For instance, listening to `""`, `"a"`, `"a.b"` or `"a.b.c"` will trigger the callback whenever
-parameter `a.b.c` is modified. Note that the preferences listeners are only available from the background in this version.
+parameter `a.b.c` is modified. Note that the preferences listeners are available from both background and local content.
 
 You should also define a couple of human viewable strings associated to each parameter in `locales/<locale>/messages.json`:
 - `weh_prefs_label_<parameter name>` defines a label for the parameter
@@ -252,8 +252,9 @@ You can define a number of constraints to your preferences. This is useful with 
 - `regexp`: (type `string`) a regular expression the string must match
 - `minimum`: (type `integer` and `float`) the minimum acceptable value
 - `maximum`: (type `integer` and `float`) the maximum acceptable value
-- `choices`: (type `choice`) the set of possible choices to appear in a select input. This is array of objects containing fields `value` (the
-actual preference value) and `name` (what is to be displayed to the user)
+- `choices`: (type `choice`) the set of possible choices to appear in a select input. This is array of either:
+    - object containing fields `value` (the actual preference value) and `name` (what is to be displayed to the user)
+    - string representing the actual preference value. The label to be displayed for this choice is searched in `locales/<locale>/messages.json` as `weh_prefs_label_<parameter name>_option_<parameter value>`
 
 Note that the preferences definition can be declared or updated at any time. This is useful if, for instance, you don't the list of choices
 in advance.
@@ -374,6 +375,17 @@ class MyComponent extends React.Component {
 ```
 
 *weh* takes care of adding/removing the listener when the component is mounted/unmounted and delivering the message to the `onWehMessage` method.
+
+### content weh API
+
+The preferences and localization API are available for background and local content. Some `weh` API methods are only available from the local content:
+
+- `post(message)`: post a message to the background. `message` is any JSONizable object.
+- `postLocal(message)`: emulate a message received from the background. `message` is any object.
+- `on([type,]callback)`: install a handler to receive background messages. If `type` is used, the callback will be invoked only if the received message contains a field `type` with the same value.
+- `off([type,]callback)`: uninstall the callback from a previous call to `on(...)`.
+- `copyToClipboard(data,mimeType)`: copy data to the clipboard. `mimeType` default is `plain/text`.
+- `setPageTitle(newTitle)`: update or create the `<title>` element in the HTML `<head>` section.
 
 ## debugging tools
 
