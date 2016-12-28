@@ -38,7 +38,7 @@ const manifest = require('./gulp-webext-manifest');
 
 const merge = require('merge-stream');
 const fs = require("fs");
-const argv = require('yargs').argv;
+var argv = require('yargs').argv;
 const path = require("path");
 const glob = require("glob");
 const through = require('through2');
@@ -48,16 +48,42 @@ const File = gutil.File;
 if(process.env.wehCwd)
     process.chdir(process.env.wehCwd);
 
+function OverrideOptions() {
+    try {
+        // on init project, the options file is in the template not the project dir
+        var optionsFile = argv._.indexOf("init")<0 ?
+            path.join(etcDir,"weh-options.json") :
+            path.join("templates",template,"etc/weh-options.json");
+        fs.lstatSync(optionsFile);
+        try {
+            var wehOptions = JSON.parse(fs.readFileSync(optionsFile,"utf8"));
+            var newArgv = {}
+            Object.assign(
+                newArgv,
+                wehOptions.all || {},
+                dev ? (wehOptions.dev || {}) : (wehOptions.prod || {}),
+                argv);
+            argv = newArgv;
+        } catch(e) {
+            console.warn("Error parsing",optionsFile,"option file:",e);
+        }
+    } catch(e) {}
+}
+
 var dev = !argv.prod;
 var prjDir = path.resolve(argv.prjdir || '.');
+var etcDir = path.join(prjDir,argv.etcdir || "etc");
+var template = argv.template || "skeleton";
+OverrideOptions();
 var buildDir = path.join(prjDir,argv.builddir || "build");
 var srcDir = path.join(prjDir,argv.srcdir || "src");
 var locDir = path.join(prjDir,argv.locdir || "src/locales");
-var etcDir = path.join(prjDir,argv.etcdir || "etc");
-var template = argv.template || "skeleton";
 var resourceMap = {};
 
+
+
 argv.uifrmwrk = argv.uifrmwrk || "none";
+
 
 var wehBackgroundModules = ["background/weh-core.js","common/weh-prefs.js","common/weh-i18n.js"];
 if(argv.inspect!==false)
