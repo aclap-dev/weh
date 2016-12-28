@@ -57,6 +57,8 @@ var etcDir = path.join(prjDir,argv.etcdir || "etc");
 var template = argv.template || "skeleton";
 var resourceMap = {};
 
+argv.uifrmwrk = argv.uifrmwrk || "none";
+
 var wehBackgroundModules = ["background/weh-core.js","common/weh-prefs.js","common/weh-i18n.js"];
 if(argv.inspect!==false)
     wehBackgroundModules.push("background/weh-inspect.js");
@@ -167,7 +169,8 @@ var globs = [].concat(wehCodeGlobs,prjCodeGlobs,[
     "node_modules/react-dom/dist/**/*.{js,css}",
     "node_modules/bootstrap/dist/css/*.css",
     "node_modules/bootstrap/dist/js/*.js",
-    "node_modules/jquery/dist/**/*.js"
+    "node_modules/jquery/dist/**/*.js",
+    "node_modules/angular/*.js"
 ].map(function(pattern) {
     return path.join(__dirname,pattern);
 }));
@@ -292,25 +295,50 @@ function ResolveOutput(stream) {
 // return html code to included required scripts
 function AddScripts(org,match) {
     var scripts = [];
-    function AddReactScripts() {
-        if(argv.react!==false) {
-            scripts.push("<script src=\"react.js\"></script>");
-            scripts.push("<script src=\"react-dom.js\"></script>");
+    function AddUIFrameworkScripts() {
+        switch(argv.uifrmwrk) {
+            case "react":
+                scripts.push("<script src=\"react.js\"></script>");
+                scripts.push("<script src=\"react-dom.js\"></script>");
+                break;
+            case "angular":
+                scripts.push("<script src=\"angular.js\"></script>");
+                break;
         }
     }
     function AddWehScripts() {
         if(argv.weh!==false) {
             scripts.push("<script src=\"weh-ct.js\"></script>");
             scripts.push("<script src=\"weh-i18n.js\"></script>");
-            if(argv["react"]!==false)
-                scripts.push("<script src=\"weh-ct-react.jsx\"></script>");
+            switch(argv.uifrmwrk) {
+                case "react":
+                    scripts.push("<script src=\"weh-ct-react.jsx\"></script>");
+                    break;
+                case "angular":
+                    scripts.push("<script src=\"weh-ct-angular.jsx\"></script>");
+                    break;
+            }
             if(argv["prefs"]!==false) {
                 scripts.push("<script src=\"weh-prefs.js\"></script>");
                 scripts.push("<script src=\"weh-ct-prefs.js\"></script>");
-                scripts.push("<script src=\"weh-ct-react-prefs.jsx\"></script>");
+                switch(argv.uifrmwrk) {
+                    case "react":
+                        scripts.push("<script src=\"weh-ct-react-prefs.jsx\"></script>");
+                        break;
+                    case "angular":
+                        scripts.push("<script src=\"weh-ct-angular-prefs.jsx\"></script>");
+                        break;
+                }
             }
             if(argv["translator"]!==false)
-                scripts.push("<script src=\"weh-ct-react-translate.jsx\"></script>");
+                switch(argv.uifrmwrk) {
+                    case "react":
+                        scripts.push("<script src=\"weh-ct-react-translate.jsx\"></script>");
+                        break;
+                    case "angular":
+                        scripts.push("<script src=\"weh-ct-angular-translate.jsx\"></script>");
+                        break;
+                }
             scripts.push("<script src=\"weh-ct-ready.js\"></script>");
         }
     }
@@ -325,10 +353,11 @@ function AddScripts(org,match) {
                 scripts.push("<script src=\"bootstrap.js\"></script>");
                 break;
             case "react":
-                AddReactScripts();
+            case "angular":
+                AddUIFrameworkScripts();
                 break;
             case "weh-all":
-                AddReactScripts();
+                AddUIFrameworkScripts();
                 AddWehScripts();
                 break;
             case "weh":
@@ -585,6 +614,7 @@ gulp.task("help", function() {
         "  --template <template>: template to be used when creating a new project",
         "  --no-watch! do generate builds dynamically",
         "  --force: force overwrite output directory",
+        "  --uifrmwrk: user interface framework (react|angular|none), default is none",
         "  --jsheader/--no-jsheader: force JS headers on dev builds/disable JS headers on prod builds",
         "  --minifyjs/--no-minifyjs: force JS minification on/off, default is minification on prod builds",
         "  --minifycss/--no-minifycss: force CSS minification on/off, default is minification on prod builds",
