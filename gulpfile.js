@@ -73,7 +73,7 @@ function OverrideOptions() {
 var dev = !argv.prod;
 var prjDir = path.resolve(argv.prjdir || '.');
 var etcDir = path.join(prjDir,argv.etcdir || "etc");
-var template = argv.template || "skeleton";
+var template = argv.template || "skeleton-react";
 OverrideOptions();
 var buildDir = path.join(prjDir,argv.builddir || "build");
 var srcDir = path.join(prjDir,argv.srcdir || "src");

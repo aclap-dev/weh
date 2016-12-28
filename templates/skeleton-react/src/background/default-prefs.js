@@ -28,10 +28,10 @@ weh.prefs.declare([{
     choices: [{
         name: "First choice",
         value: "first"
-    },{   
+    },{
         name: "Second choice",
         value: "second"
-    },{   
+    },{
         name: "Third choice",
         value: "third"
     }]
