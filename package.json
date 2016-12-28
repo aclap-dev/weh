@@ -1,6 +1,6 @@
 {
   "name": "weh",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Toolkit for developing WebExtensions add-ons on Firefox, Chrome, Edge and Opera, using ReactJS for the UI",
   "keywords": [
     "webextensions",
