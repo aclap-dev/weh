@@ -53,7 +53,7 @@ function OverrideOptions() {
         // on init project, the options file is in the template not the project dir
         var optionsFile = argv._.indexOf("init")<0 ?
             path.join(etcDir,"weh-options.json") :
-            path.join("templates",template,"etc/weh-options.json");
+            path.join(__dirname,"templates",template,"etc/weh-options.json");
         fs.lstatSync(optionsFile);
         try {
             var wehOptions = JSON.parse(fs.readFileSync(optionsFile,"utf8"));
@@ -341,7 +341,7 @@ function AddScripts(org,match) {
                     scripts.push("<script src=\"weh-ct-react.jsx\"></script>");
                     break;
                 case "angular":
-                    scripts.push("<script src=\"weh-ct-angular.jsx\"></script>");
+                    scripts.push("<script src=\"weh-ct-angular.js\"></script>");
                     break;
             }
             if(argv["prefs"]!==false) {
@@ -352,7 +352,7 @@ function AddScripts(org,match) {
                         scripts.push("<script src=\"weh-ct-react-prefs.jsx\"></script>");
                         break;
                     case "angular":
-                        scripts.push("<script src=\"weh-ct-angular-prefs.jsx\"></script>");
+                        scripts.push("<script src=\"weh-ct-angular-prefs.js\"></script>");
                         break;
                 }
             }
@@ -362,7 +362,7 @@ function AddScripts(org,match) {
                         scripts.push("<script src=\"weh-ct-react-translate.jsx\"></script>");
                         break;
                     case "angular":
-                        scripts.push("<script src=\"weh-ct-angular-translate.jsx\"></script>");
+                        scripts.push("<script src=\"weh-ct-angular-translate.js\"></script>");
                         break;
                 }
             scripts.push("<script src=\"weh-ct-ready.js\"></script>");
