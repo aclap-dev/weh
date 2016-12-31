@@ -175,8 +175,46 @@
         assign: function(prefs) {
             for(var k in prefs)
                 this[k] = prefs[k];
-        }
+        },
 
+        isValid: function(prefName,value) {
+            var spec = this.$specs[prefName];
+            if(!spec)
+                return undefined;
+            switch(spec.type) {
+                case "string":
+                    if(spec.regexp && !new RegExp(spec.regexp).test(value))
+                        return false;
+                    break;
+                case "integer":
+                    if(!/^-?[0-9]+$/.test(value))
+                        return false;
+                    if(isNaN(parseInt(value)))
+                        return false;
+                case "float":
+                    if(spec.type=="float") {
+                        if(!/^-?[0-9]+(\.[0-9]+)$/.test(value))
+                            return false;
+                        if(isNaN(parseFloat(value)))
+                            return false;
+                    }
+                    if(typeof spec.minimum!="undefined" && value<spec.minimum)
+                        return false;
+                    if(typeof spec.maximum!="undefined" && value>spec.maximum)
+                        return false;
+                    break;
+                case "choice":
+                    var ok = false;
+                    (spec.choices || []).forEach((choice) => {
+                        if(value==choice.value)
+                            ok = true;
+                    });
+                    if(!ok)
+                        return false;
+                    break;
+            }
+            return true;
+        }
     }
 
     weh.prefs = new Prefs();
