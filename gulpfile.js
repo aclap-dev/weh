@@ -330,6 +330,9 @@ function AddScripts(org,match) {
             case "angular":
                 scripts.push("<script src=\"angular.js\"></script>");
                 break;
+            case "jquery":
+                scripts.push("<script src=\"jquery.js\"></script>");
+                break;
         }
     }
     function AddWehScripts() {
@@ -343,6 +346,9 @@ function AddScripts(org,match) {
                 case "angular":
                     scripts.push("<script src=\"weh-ct-angular.js\"></script>");
                     break;
+                case "jquery":
+                    scripts.push("<script src=\"weh-ct-jquery.js\"></script>");
+                    break;
             }
             if(argv["prefs"]!==false) {
                 scripts.push("<script src=\"weh-prefs.js\"></script>");
@@ -354,6 +360,9 @@ function AddScripts(org,match) {
                     case "angular":
                         scripts.push("<script src=\"weh-ct-angular-prefs.js\"></script>");
                         break;
+                    case "jquery":
+                        scripts.push("<script src=\"weh-ct-jquery-prefs.js\"></script>");
+                        break;
                 }
             }
             if(argv["translator"]!==false)
@@ -363,6 +372,9 @@ function AddScripts(org,match) {
                         break;
                     case "angular":
                         scripts.push("<script src=\"weh-ct-angular-translate.js\"></script>");
+                        break;
+                    case "jquery":
+                        scripts.push("<script src=\"weh-ct-jquery-translate.js\"></script>");
                         break;
                 }
             scripts.push("<script src=\"weh-ct-ready.js\"></script>");
@@ -380,6 +392,7 @@ function AddScripts(org,match) {
                 break;
             case "react":
             case "angular":
+            case "jquery":
                 AddUIFrameworkScripts();
                 break;
             case "weh-all":
@@ -640,7 +653,7 @@ gulp.task("help", function() {
         "  --template <template>: template to be used when creating a new project",
         "  --no-watch! do generate builds dynamically",
         "  --force: force overwrite output directory",
-        "  --uifrmwrk: user interface framework (react|angular|none), default is none",
+        "  --uifrmwrk: user interface framework (react|angular|jquery|none), default is none",
         "  --jsheader/--no-jsheader: force JS headers on dev builds/disable JS headers on prod builds",
         "  --minifyjs/--no-minifyjs: force JS minification on/off, default is minification on prod builds",
         "  --minifycss/--no-minifycss: force CSS minification on/off, default is minification on prod builds",

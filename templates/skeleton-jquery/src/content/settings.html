@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html ng-controller="WehCtrl">
+    <head>
+        <!-- build:css settings.css -->
+		<link href="bootstrap.css" type="text/css" rel="stylesheet">
+		<link href="styles.css" type="text/css" rel="stylesheet">
+        <!-- endbuild -->
+    </head>
+    <body class="container-fluid">
+
+        <!-- build:js vendor-bundle.js -->
+        <!-- weh:js weh-all -->
+        <!-- endbuild -->
+
+        <!-- build:js settings-bundle.js -->
+        <script src="settings.js"></script>
+        <!-- endbuild -->
+
+        <div id="root" data-weh-params>
+            <h1 class="text-center" data-weh-i18n="settings"></h1>
+            <br/>
+            <div>
+                <div data-weh-version></div>
+                <div data-weh-param-set
+                    params="myparam_string,myparam_integer,myparam_float,myparam_boolean,myparam_choice"
+                    >
+                </div>
+            </div>
+            <div data-weh-pref-buttons></div>
+        </div>
+
+    </body>
+</html>

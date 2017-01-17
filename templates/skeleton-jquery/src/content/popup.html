@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- build:css styles.css -->
+		<link href="styles.css" type="text/css" rel="stylesheet">
+        <!-- endbuild -->
+
+    </head>
+    <body ng-controller="SkelCtrl">
+        <!-- build:js vendor-bundle.js -->
+        <!-- weh:js weh-all -->
+        <!-- endbuild -->
+
+        <!-- build:js popup-bundle.js -->
+        <script src="popup.js"></script>
+        <!-- endbuild -->
+
+        <div id="root">
+            <div class="sample-panel" data-weh-i18n="sample_panel_text"></div>
+            <div class="sample-toolbar">
+                <a data-skel-message="open-translation" data-weh-i18n="translation"></a>
+                <a data-skel-message="open-settings" data-weh-i18n="settings"></a>
+            </div>
+        </div>
+
+    </body>
+</html>
