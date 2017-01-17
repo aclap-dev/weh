@@ -1,7 +1,7 @@
 {
   "name": "weh",
-  "version": "1.2.0",
-  "description": "Toolkit for developing WebExtensions add-ons on Firefox, Chrome, Edge and Opera, using ReactJS or Angular for the UI",
+  "version": "1.3.0",
+  "description": "Toolkit for developing WebExtensions add-ons on Firefox, Chrome, Edge and Opera, using ReactJS, Angular or jQuery for the UI",
   "keywords": [
     "webextensions",
     "add-on",
@@ -13,7 +13,8 @@
     "edge",
     "reactjs",
     "react",
-    "angular"
+    "angular",
+    "jquery"
   ],
   "homepage": "https://github.com/mi-g/weh",
   "bugs": {
