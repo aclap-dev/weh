@@ -651,7 +651,7 @@ gulp.task("help", function() {
         "  --prjdir <dir>: project directory (required for most commands)",
         "  --prod: addon generated for production",
         "  --template <template>: template to be used when creating a new project",
-        "  --no-watch! do generate builds dynamically",
+        "  --no-watch: do not generate builds dynamically",
         "  --force: force overwrite output directory",
         "  --uifrmwrk: user interface framework (react|angular|jquery|none), default is none",
         "  --jsheader/--no-jsheader: force JS headers on dev builds/disable JS headers on prod builds",
