@@ -1,0 +1,77 @@
+{
+    "weh_inspector": {
+        "message": "Weh Inspector"
+    },
+    "rescan_addons": {
+        "message": "Rescan addons"
+    },
+    "messages_none": {
+        "message": "No message"
+    },
+    "clear_messages": {
+        "message": "Clear messages"
+    },
+    "storage": {
+        "message": "Storage"
+    },
+    "show_storage": {
+        "message": "Storage"
+    },
+    "get_prefs": {
+        "message": "Preferences"
+    },
+    "prefs": {
+        "message": "Preferences"
+    },
+    "prefs_save": {
+        "message": "Save"
+    },
+	"weh_prefs_label_messages_display_mode": {
+		"message": "Messages display mode"
+	},
+	"weh_prefs_description_messages_display_mode": {
+		"message": "How calls/replies should be displayed"
+	},
+	"weh_prefs_messages_display_mode_option_async": {
+		"message": "Asynchronous"
+	},
+	"weh_prefs_messages_display_mode_option_sync_call": {
+		"message": "Synchronous (on call)"
+	},
+	"weh_prefs_messages_display_mode_option_sync_reply": {
+		"message": "Synchronous (on reply)"
+	},
+	"weh_prefs_label_display_timestamp": {
+		"message": "Display timestamp"
+	},
+	"weh_prefs_description_display_timestamp": {
+		"message": "Should the event timestamp be displayed"
+	},
+	"weh_prefs_label_display_call_duration": {
+		"message": "Display call duration"
+	},
+	"weh_prefs_description_display_call_duration": {
+		"message": "Should the call duration be displayed"
+	},
+	"weh_prefs_label_max_messages": {
+		"message": "Max messages"
+	},
+	"weh_prefs_description_max_messages": {
+		"message": "Maximum number of messages to be displayed (0=no limit)"
+	},
+    "translation": {
+        "message": "Translation"
+    },
+    "save": {
+        "message": "Save"
+    },
+    "cancel": {
+        "message": "Cancel"
+    },
+    "default": {
+        "message": "Default"
+    },
+    "rpc_messages": {
+        "message": "RPC messages"
+    }
+}

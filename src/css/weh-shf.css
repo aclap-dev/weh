@@ -1,0 +1,47 @@
+/*
+ * weh - WebExtensions Helper
+ *
+ * @summary workflow and base code for developing WebExtensions browser add-ons
+ * @author Michel Gutierrez
+ * @link https://github.com/mi-g/weh
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/*
+ * SHF = Sticky Header Footer = fixed header at top, footer at bottom with scrollable main content
+ */
+
+html, body {
+	height: 100%;
+}
+
+body {
+	overflow: hidden;
+}
+
+.weh-shf, .weh-shf > div, .weh-shf > div > div, .weh-shf > div > div > div,
+.weh-shf > div > div > div > div, .weh-shf > div > div > div > div > div {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+header {
+	flex: 0 0 auto;
+	background-color: #f8f8f8;
+}
+
+main {
+  flex: 1 1 auto;
+  position: relative;
+  overflow-y: auto;
+  height: 100%;
+}
+
+footer {
+  flex: 0 0 auto;
+  background-color: #f8f8f8;
+}

@@ -1,0 +1,218 @@
+/*
+ * weh - WebExtensions Helper
+ *
+ * @summary workflow and base code for developing WebExtensions browser add-ons
+ * @author Michel Gutierrez
+ * @link https://github.com/mi-g/weh
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#root {
+    min-width: 500px;
+}
+
+:focus {outline:none;}
+::-moz-focus-inner {border:0;}
+
+.sample-popup {
+	.sample-panel {
+		padding: 2em;
+		font-size: 20pt;
+		text-align: center;
+	}
+	.sample-toolbar {
+		overflow: hidden;
+		padding: 8px;
+		background-color: #eee;
+		a {
+			float: right;
+			cursor: pointer;
+			margin: 0 8px;
+		}
+	}
+}
+
+.insp-msg:nth-child(even) {
+	background-color: #f8f8f8;
+}
+
+.insp-msg {
+
+	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+ 
+	.im-caller {
+		color: #484;
+	}
+	.im-callee {
+		color: #484;
+	}
+	.im-call-sign {
+		margin: 0 4px;
+	}
+	.im-result-sign {
+		margin: 0 4px 0 12px;
+	}
+	.im-error-sign {
+		position: relative;
+		top: 3px;
+		margin: 0 8px;
+		font-size: 1.5rem;
+	}
+	.im-error {
+		color: #e44;
+	}
+	.im-method {
+		color: #448;
+	}
+	.im-timestamp {
+		margin: 0 12px 0 0;
+		color: #888;
+		font-size: .8rem;
+	}
+	.im-duration {
+		margin: 0 0 0 8px;
+		color: #888;
+		font-size: .8rem;
+	}
+	.collapsed-icon {
+		position: relative;
+		top: 4px;
+		left: 6px;
+	}
+}
+
+.sel-addon {
+	display: inline-flex;
+
+	.sel-addon-id {
+		font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+		font-size: .7rem;
+		margin: 0 8px;
+	}
+}
+
+.commands {
+	padding: 12px 0;
+
+	li {
+		list-style: none;
+
+		a:not([href]):not([tabindex]) {
+			color: #007bff;
+			text-decoration: none;
+			background-color: transparent;
+			-ms-touch-action: manipulation;
+			touch-action: manipulation;
+			cursor: pointer;
+		}
+
+		a:hover:not([href]):not([tabindex]) {
+			color: #0056b3;
+			text-decoration: underline;
+		}
+	}
+}
+
+.prefs-table.table  {
+
+	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+
+	tr:nth-child(even) {
+		background-color: #f8f8f8;
+	}
+
+	td {
+		vertical-align: middle;
+	}
+	.pref-value {
+		padding: 0 0 0 8px;
+	}
+}
+
+.storage-table {
+
+	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+
+	tr:nth-child(odd) {
+		background-color: #f8f8f8;
+	}
+
+	tr.storage-type {
+		background-color: #eee;
+		font-weight: 800;
+		font-size: 1.1rem;
+	}
+}
+
+.no-message {
+	color: #ccc;
+	padding: 2em;
+}
+
+.insp-layout {
+
+	.insp-main {
+		display: flex;
+		flex-direction: row;
+		height: 100%;
+	}
+
+	.insp-left {
+		flex: 0 0 auto;
+		max-width: 200px;
+	}
+
+	.insp-content {
+		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.insp-scrollable {
+		overflow-y: auto;
+		height: 100%;
+	}
+
+	.insp-container {
+		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+
+	.insp-tabs {
+		flex: 0 0 auto;
+	}
+
+	.insp-main-content {
+		flex: 1 1 auto;
+		height: 100%;
+		overflow-y: auto;
+	}
+
+}
+
+.react-json-view.scalar-view {
+	font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+	display: inline-block;
+	color: rgb(0, 43, 54);
+	font-size: .9rem;
+}
+
+.pref-edit {
+	input {
+		width: 100%;
+		border: 0;
+		background-color: #444;
+		color: #fff;
+		padding-left: .5em;
+	}
+}
+
+.pref-edit.error {
+	background-color: #f44;
+}
+	

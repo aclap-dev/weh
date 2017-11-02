@@ -1,0 +1,38 @@
+/*
+ * weh - WebExtensions Helper
+ *
+ * @summary workflow and base code for developing WebExtensions browser add-ons
+ * @author Michel Gutierrez
+ * @link https://github.com/mi-g/weh
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+ header {
+	min-height: 42px;
+	line-height: 42px;
+}
+
+header .weh-header-title {
+	background-repeat: no-repeat;
+	background-position: 8px center;
+	background-size: contain;
+	padding-left: 42px;
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+header .weh-header-close {
+	font-weight: 100;
+	font-size: 1.5em;
+	line-height: 1.5em;
+	cursor: pointer;
+	color: #808080;
+	padding: 0 12px 0 0;
+}
+
+header .weh-header-close:hover {
+	color: #404040;
+}

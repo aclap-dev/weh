@@ -1,0 +1,69 @@
+
+.natmsgsh {
+	
+		background-color: #f8f8f8;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	
+		.natmsgsh-result {
+			flex: 1 1 auto;
+			background-color: #fff;
+			border-radius: 3px;
+			margin: 3px 3px 0 3px;
+			border: 1px solid #ddd;
+			padding: 4px;
+			overflow: auto;
+	
+			.natmsgsh-call {
+				font-weight: 800;
+			}
+			.natmsgsh-return {
+				color: #888;
+			}
+			.natmsgsh-error {
+				color: #f88;
+			}
+			.natmsgsh-item {
+				span.natmsgsh-ret-marker {
+					margin-right: 8px;
+				}
+				.icon-container {
+					font-size: 1.3em;
+				}
+				.object-container {
+					font-size: .8em;
+				}
+			}
+	
+			.react-json-view.scalar-view {
+				font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+				display: inline-block;
+				color: rgb(0, 43, 54);
+				font-size: .9rem;
+			}
+			
+		}
+	
+		.natmsgsh-input {
+			flex: 0 0 auto;
+			padding: 3px;
+			display: flex;
+			flex-direction: row;
+		
+			input {
+				flex: 1 1 auto;
+			}
+			input.syntax-error {
+				background-color: #f88;
+			}
+			input.syntax-ok {
+				background-color: #8f8;
+			}
+			button {
+				flex: 0 0 auto;
+				margin-left: 3px;
+			}
+		}
+	}
+	

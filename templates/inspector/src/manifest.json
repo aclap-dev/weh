@@ -1,0 +1,35 @@
+{
+	"manifest_version": 2,
+	"name": "Weh Inspector",
+	"default_locale": "en_US",
+	"version": "1.0",
+	"version_name": "1.0",
+	"author": "Michel Gutierrez",
+	"description": "Trace remote procedure calls on Weh addons",
+	"background": {
+		"scripts": [
+			"background/main.js"
+		],
+		"persistent": true
+	},
+	"icons": {
+		"32": "content/images/icon-32.png",
+		"40": "content/images/icon-40.png",
+		"48": "content/images/icon-48.png",
+		"128": "content/images/icon-128.png"
+	},
+	"options_ui": {
+		"page": "content/settings.html?panel=settings",
+		"open_in_tab": false
+	},
+	"permissions": [
+		"tabs",
+		"contextMenus",
+        "management"
+	],
+	"applications": {
+		"gecko": {
+			"id": "weh-inspector@downloadhelper.net"
+		}
+	}
+}
