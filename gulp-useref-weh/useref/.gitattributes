@@ -1,5 +1,0 @@
-* text=auto
-
-# Tell git not to change these line endings
-test/testfiles/16-win-expected.html text=-crlf
-test/testfiles/16-win.html          text=-crlf
