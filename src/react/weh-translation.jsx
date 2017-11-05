@@ -321,7 +321,7 @@ export var WehTranslationItem = connect(
 				orgValue: this.props.orgValue || ""
 			}
 			var maxArgs = 4; // should be 9 but this is a bug in Edge
-			var argPlaceHolders = new Array(maxArgs).fill("").map((v,i) => {return "$arg"+(i+1)+"$"});
+			var argPlaceHolders = new Array(maxArgs).fill("").map((v,i) => {return "$ARG"+(i+1)+"$"});
 			this.defaultString = browser.i18n.getMessage(this.props.keyName,argPlaceHolders);
 			this.handleChange = this.handleChange.bind(this);
 			this.formClass = this.formClass.bind(this);
