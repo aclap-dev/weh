@@ -63,16 +63,13 @@ if(browser.runtime.onMessageExternal) {
                 });
                 break;
 			case "weh#set-pref":
-				console.info("weh#set-pref",message);
                 wehPrefs[message.pref] = message.value;
                 sendResponse(true);
                 break;
 			case "weh#get-storage":
-				console.info("+weh#get-storage");
                 inspectorId = sender.id;
                 GetStorageData()
 					.then((data) => {
-						console.info("weh#get-storage got data");
 						browser.runtime.sendMessage(inspectorId,{
 							type: "weh#storage",
 							storage: data
@@ -84,7 +81,6 @@ if(browser.runtime.onMessageExternal) {
 				sendResponse({
 					type: "weh#storage-pending"
 				});
-				console.info("-weh#get-storage");
                 break;
  
 		}
