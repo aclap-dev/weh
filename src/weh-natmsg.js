@@ -24,6 +24,9 @@ class EventHandler {
 	removeListener(listener) {
 		this.listeners = this.listeners.filter((_listener) => listener !== _listener);
 	}
+	removeAllListeners() {
+		this.listeners = [];
+	}
 	notify(...args) {
 		this.listeners.forEach((listener) => {
 			try {
@@ -45,9 +48,10 @@ class NativeMessagingApp {
 		this.runningCalls = [];
 		this.state = "idle";
 		this.postFn = this.post.bind(this);
-		this.onAppNotFound = new EventHandler();
-		this.notifyAppNotFoundListeners = this.onAppNotFound.notify.bind(this.onAppNotFound);
+		this.onAppNotFound = new EventHandler(); // general
+		this.onAppNotFoundCheck = new EventHandler(); // call specific
 		this.appStatus = "unknown";
+		this.shouldNotifyAppNotFound = false; 
 	}
 
 	post(receiver,message) {
@@ -56,17 +60,8 @@ class NativeMessagingApp {
 
 	call(...params) {
 		var self = this;
-		return this.callCatchAppNotFound(this.notifyAppNotFoundListeners,...params)
-			.then((result) => {
-				if(self.appStatus=="checking")
-					self.appStatus="ok";
-				return result;
-			})
-			.catch((err)=>{
-				if(self.appStatus=="checking")
-					self.appStatus="ok";
-				throw err;
-			});
+		this.shouldNotifyAppNotFound = true;
+		return this.callCatchAppNotFound(null,...params);
 	}
 
 	callCatchAppNotFound(appNotFoundHandler,...params) {
@@ -93,6 +88,9 @@ class NativeMessagingApp {
 				}
 			}
 		}
+
+		if(appNotFoundHandler && (self.appStatus=="unknown" || self.appStatus=="checking"))
+			self.onAppNotFoundCheck.addListener(appNotFoundHandler);
 
 		switch(this.state) {
 			case "running":
@@ -126,13 +124,20 @@ class NativeMessagingApp {
 						self.appStatus = "checking";
 						self.appPort = appPort;
 						appPort.onMessage.addListener((response) => {
+							if(self.appStatus=="checking") {
+								self.appStatus="ok";
+								self.onAppNotFoundCheck.removeAllListeners();
+							}
 							rpc.receive(response,self.postFn,self.name);
 						});
 						appPort.onDisconnect.addListener(() => {
-							console.log("MatMsg port disconnected",appPort.error || browser.runtime.lastError);
 							if(self.appStatus=="checking") {
-								self.appStatus = "ko";
-								appNotFoundHandler(appPort.error || browser.runtime.lastError);
+								self.onAppNotFoundCheck.notify(appPort.error || browser.runtime.lastError);
+								self.onAppNotFoundCheck.removeAllListeners();
+								if(self.shouldNotifyAppNotFound) {
+									self.shouldNotifyAppNotFound = false;
+									self.onAppNotFound.notify(appPort.error || browser.runtime.lastError);
+								}
 							}
 							ProcessPending(new Error("Disconnected"));
 							var call;
@@ -140,6 +145,7 @@ class NativeMessagingApp {
 								call.reject(new Error("Native port disconnected"));
 							}
 							self.state = "idle";
+							self.appStatus = "unknown";
 							self.appPort = null;
 						});
 						self.state = "running";
