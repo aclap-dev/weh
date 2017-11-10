@@ -163,6 +163,8 @@ function Close(name) {
 	var tab = panels[name];
 	if(tab && tab.type=="tab")
 		browser.tabs.remove(tab.tabId);
+	else if(tab && tab.type=="window")
+		browser.windows.remove(tab.windowId);
 	else
 		wehRpc.call(name,"close");
 }
