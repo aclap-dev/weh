@@ -182,7 +182,7 @@ browser.runtime.onMessageExternal.addListener(function(message, sender, sendResp
 	sendResponse(true);				
 });
 
-weh.prefs.declare(require('./default-prefs'));
+weh.prefs.declare(require('default-prefs'));
 
 if(browser.management.onInstalled)
 	browser.management.onInstalled.addListener(CheckNewAddon);

@@ -32,5 +32,5 @@ weh.rpc.listen({
 	},
 });
 
-weh.prefs.declare(require('./default-prefs'));
+weh.prefs.declare(require('default-prefs'));
 
