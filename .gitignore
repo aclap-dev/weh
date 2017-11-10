@@ -1,4 +1,6 @@
-node_modules
-tmp
+node_modules/
+tmp/
 npm-debug.log
 run-web-ext.sh
+inspector/
+skeleton/
