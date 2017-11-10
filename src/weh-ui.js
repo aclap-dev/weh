@@ -78,24 +78,31 @@ function OpenPanel(name,options) {
 							type: "window",
 							windowId: window.id
 						}
-						return browser.windows.update(window.id,{
+						return Promise.all([window,browser.windows.update(window.id,{
 							focused: true
-						});
+						})]);
 					})
-					.then((window) => {
-						browser.tabs.query({
-								windowId: window.id
-							}).then((_tabs)=>{
-								if(_tabs.length>0) {
-									tabs[_tabs[0].id] = name;
-									resolve();
-								}
-							});
+					.then(([window]) => {
 						// trick to repaint window on Firefox
 						browser.windows.update(window.id,{
-							width: window.width,
 							height: window.height+1
+						})
+						.then(()=>{
+							return browser.windows.update(window.id,{
+								height: window.height-1
+							})
+						})
+						.then(()=>{
+							return browser.tabs.query({
+								windowId: window.id
+							})
+						}).then((_tabs)=>{
+							if(_tabs.length>0) {
+								tabs[_tabs[0].id] = name;
+								resolve();
+							}
 						});
+						
 						function OnFocusChanged(focusedWindowId) {
 							if(focusedWindowId==window.id)
 								return;
