@@ -48,6 +48,7 @@ class NativeMessagingApp {
 		this.runningCalls = [];
 		this.state = "idle";
 		this.postFn = this.post.bind(this);
+		this.postMessageFn = this.postMessage.bind(this);
 		this.onAppNotFound = new EventHandler(); // general
 		this.onAppNotFoundCheck = new EventHandler(); // call specific
 		this.appStatus = "unknown";
@@ -56,6 +57,13 @@ class NativeMessagingApp {
 
 	post(receiver,message) {
 		this.appPort.postMessage(message);
+	}
+
+	// workaround to handle the fact that returning functions do not have
+	// receiver parameter
+	// TODO have a unique post() function
+	postMessage(message) {
+		this.appPort.postMessage(message);		
 	}
 
 	call(...params) {
@@ -128,7 +136,7 @@ class NativeMessagingApp {
 								self.appStatus="ok";
 								self.onAppNotFoundCheck.removeAllListeners();
 							}
-							rpc.receive(response,self.postFn,self.name);
+							rpc.receive(response,self.postMessageFn,self.name);
 						});
 						appPort.onDisconnect.addListener(() => {
 							if(self.appStatus=="checking") {
