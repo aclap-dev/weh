@@ -25,7 +25,8 @@
 	"permissions": [
 		"tabs",
 		"contextMenus",
-        "management"
+		"management",
+		"storage"
 	],
 	"applications": {
 		"gecko": {
