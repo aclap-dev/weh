@@ -116,8 +116,17 @@ var prefs = {};
 
 try {
 	var prefsStr = localStorage.getItem("weh-prefs");
-	prefs = Parse(prefsStr);
-	lastHash = Hash(prefsStr);
+	if(prefsStr===null) {
+		browser.storage.local.get("weh-prefs")
+			.then((result)=>{
+				var wePrefs = result["weh-prefs"];
+				if(wePrefs)
+					wehPrefs.assign(wePrefs);
+			})
+	} else {
+		prefs = Parse(prefsStr);
+		lastHash = Hash(prefsStr);
+	}
 } catch(e) {}
 
 wehPrefs.assign(prefs);
@@ -130,6 +139,9 @@ wehPrefs.on("",{
 	if(hash!=lastHash) {
 		lastHash = hash;
 		localStorage.setItem("weh-prefs",prefsStr);
+		browser.storage.local.set({
+			"weh-prefs": prefs
+		});
 	}
 	Object.keys(apps).forEach((app)=>{
 		var appOptions = apps[app];
