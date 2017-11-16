@@ -132,6 +132,7 @@ export var WehTranslationForm = connect(
 
 			this.handleSearchChange = this.handleSearchChange.bind(this);
 			this.searchFilter = this.searchFilter.bind(this);
+			this.fileInputChange = this.fileInputChange.bind(this);
 		}
 
 		handleSearchChange(event) {
@@ -185,30 +186,32 @@ export var WehTranslationForm = connect(
 			}
 		}
 
+		fileInputChange(event) {
+			var self = this;
+			var file = self.fileInput.files[0];
+			if(file) {
+				var reader = new FileReader();
+				reader.onload = (event) => {
+					try {
+						var data = JSON.parse(event.target.result);
+						self.props.import(data);
+					} catch(e) {
+						alert("File "+file.name+": Invalid format "+e.message);
+					}
+				}
+				reader.readAsText(file);
+			}
+		}
+
 		setFileInput(input) {
 			var self = this;
 			return (input) => {
+				if(input)
+					input.removeEventListener("change",self.fileInputChange);
 				self.fileInput = input;
 				if(!input)
 					return;
-				input.addEventListener("change",(event)=>{
-					//event.preventDefault();
-					var file = self.fileInput.files[0];
-					if(file) {
-						console.info("file",file);
-						var reader = new FileReader();
-						reader.onload = (event) => {
-							console.info("text",event.target.result);
-							try {
-								var data = JSON.parse(event.target.result);
-								self.props.import(data);
-							} catch(e) {
-								alert("File "+file.name+": Invalid format "+e.message);
-							}
-						}
-						reader.readAsText(file);
-					}
-				});
+				input.addEventListener("change",self.fileInputChange);
 			}
 		}
 
