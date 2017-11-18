@@ -382,16 +382,28 @@ var Message = connect(
 					</div>
 				)
 			else if(this.props.src.type=="reply" && this.props.src.reply)
-				return (
-					<div className="insp-msg">
-						<span className="im-caller">&lt;{this.props.src.call.caller || ''}#{this.props.src.call.rid}&gt;</span>
-						<span className="im-call-sign">&lArr;</span>
-						<span className="im-callee">&lt;{this.props.src.call.callee || ''}&gt;
-							</span>.<span className="im-method">{this.props.src.call.method}
-							</span>()
-							{this.renderResult()}
-					</div>
-				)
+				if(this.props.src.call)
+					return (
+						<div className="insp-msg">
+							<span className="im-caller">&lt;{this.props.src.call.caller || ''}#{this.props.src.call.rid}&gt;</span>
+							<span className="im-call-sign">&lArr;</span>
+							<span className="im-callee">&lt;{this.props.src.call.callee || ''}&gt;
+								</span>.<span className="im-method">{this.props.src.call.method}
+								</span>()
+								{this.renderResult()}
+						</div>
+					)
+				else // original call expired from inspector
+					return (
+							<div className="insp-msg">
+								<span className="im-caller">&lt;???&gt;</span>
+								<span className="im-call-sign">&lArr;</span>
+								<span className="im-callee">&lt;???&gt;
+									</span>.<span className="im-method">???
+									</span>()
+									{this.renderResult()}
+							</div>
+						)
 			else
 				return null;					
 		}
@@ -632,7 +644,9 @@ var AddonStorage = connect(
 			return (
 				<div className="table-responsive">
 					<table className="table storage-table">
-						{rows}
+						<tbody>
+							{rows}
+						</tbody>
 					</table>
 				</div>
 			)
