@@ -28,27 +28,45 @@ function Open(name,options) {
 	}
 }
 
+function reduxSetDataCode(data) {
+	return `
+		( () => {
+			try {
+				store.dispatch({
+					type: "SET_WEH_DATA",
+					payload: ${JSON.stringify(data)}
+				})
+			} catch(e) {
+				console.error(e);
+				return false;
+			}
+		} ) ();
+	`;
+}
+
 function OpenTab(name,options) {
 	return new Promise((resolve, reject) => {
 		var url = browser.extension.getURL(options.url+"?panel="+name);
 		GotoTab(url)
 			.then(function(foundTab) {
 				if(!foundTab)
-					browser.tabs.create({
+					return browser.tabs.create({
 							url: url,
 						})
 						.then(function(tab) {
+							weh.__declareAppTab(name,tab.id);
 							panels[name] = {
 								type: "tab",
 								tabId: tab.id
 							}
 							tabs[tab.id] = name;
-							resolve
-						})
-						.catch(reject);
-				else
-					resolve();
+							if(options.reduxData)
+								return browser.tabs.executeScript(tab.id,{
+									code: reduxSetDataCode(options.reduxData)
+								});
+						});
 			})
+			.then(resolve)
 			.catch(reject);		
 	})
 }
@@ -98,10 +116,16 @@ function OpenPanel(name,options) {
 							})
 						}).then((_tabs)=>{
 							if(_tabs.length>0) {
+								weh.__declareAppTab(name,_tabs[0].id);
 								tabs[_tabs[0].id] = name;
-								resolve();
+								if(options.reduxData)
+									return browser.tabs.executeScript(_tabs[0].id,{
+										code: reduxSetDataCode(options.reduxData)
+									});
 							}
-						});
+						}).then(resolve)
+						.catch(reject);
+
 						
 						function OnFocusChanged(focusedWindowId) {
 							if(focusedWindowId==window.id)
@@ -130,6 +154,7 @@ function OpenPanel(name,options) {
 }
 
 browser.tabs.onRemoved.addListener((tabId)=>{
+	weh.__closeByTab(tabId);
 	var panelName = tabs[tabId];
 	if(panelName) {
 		delete tabs[tabId];
