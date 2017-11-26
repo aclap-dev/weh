@@ -21,10 +21,8 @@ weh.rpc.setUseTarget(true);
 
 weh.rpc.setPost((app,message)=>{
 	var appOptions = apps[app];
-	if(appOptions)
+	if(appOptions && appOptions.port)
 		appOptions.port.postMessage(message);
-	//else
-	//	console.warn("Cannot post message to unknown app",app);
 });
 
 weh.rpc.listen({
@@ -76,6 +74,30 @@ browser.runtime.onConnect.addListener((port) => {
 		}
 	});
 });
+
+weh.__declareAppTab = function(app,tabId) {
+	if(!apps[app])
+		apps[app] = {};
+	Object.assign(apps[app],{
+		tab: tabId
+	});
+}
+
+weh.__closeByTab = function(tabId) {
+	Object.keys(apps).forEach((app)=>{
+		var appOptions = apps[app];
+		if(appOptions.tab===tabId) {
+			delete apps[app];
+			var wait = waiting[app];
+			if(wait) {
+				if(wait.timer)
+					clearTimeout(wait.timer);
+				delete waiting[app];
+				wait.reject(new Error("Disconnected waiting for "+app));
+			}
+		}
+	});
+}
 
 weh._ = require('weh-i18n').getMessage;
 weh.ui = require('weh-ui');
@@ -168,7 +190,7 @@ weh.wait = (id,options={}) => {
 			timer: setTimeout(()=>{
 				delete waiting[id];
 				reject(new Error("Waiter for "+id+" timed out"));
-			}, options.timeout || 5000)
+			}, options.timeout || 12000)
 		}
 	});
 }
