@@ -52,7 +52,6 @@ class NativeMessagingApp {
 		this.onAppNotFound = new EventHandler(); // general
 		this.onAppNotFoundCheck = new EventHandler(); // call specific
 		this.appStatus = "unknown";
-		this.shouldNotifyAppNotFound = false; 
 	}
 
 	post(receiver,message) {
@@ -68,7 +67,6 @@ class NativeMessagingApp {
 
 	call(...params) {
 		var self = this;
-		this.shouldNotifyAppNotFound = true;
 		return this.callCatchAppNotFound(null,...params);
 	}
 
@@ -142,10 +140,8 @@ class NativeMessagingApp {
 							if(self.appStatus=="checking") {
 								self.onAppNotFoundCheck.notify(appPort.error || browser.runtime.lastError);
 								self.onAppNotFoundCheck.removeAllListeners();
-								if(self.shouldNotifyAppNotFound) {
-									self.shouldNotifyAppNotFound = false;
+								if(!appNotFoundHandler)
 									self.onAppNotFound.notify(appPort.error || browser.runtime.lastError);
-								}
 							}
 							ProcessPending(new Error("Disconnected"));
 							var call;
