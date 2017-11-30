@@ -37,7 +37,6 @@ Prefs.prototype = {
 						return;
 					if(!listener.pack)
 						try {
-							console.info("no pack callback");
 							listener.callback(p,val,oldVal);
 						} catch(e) {}
 					else {
