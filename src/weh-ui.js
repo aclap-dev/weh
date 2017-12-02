@@ -111,18 +111,37 @@ function OpenPanel(name,options) {
 							})
 						})
 						.then(()=>{
-							return browser.tabs.query({
+							return Promise.all([window.id,browser.tabs.query({
 								windowId: window.id
-							})
-						}).then((_tabs)=>{
-							if(_tabs.length>0) {
-								weh.__declareAppTab(name,_tabs[0].id);
-								tabs[_tabs[0].id] = name;
-								if(options.reduxData)
-									return browser.tabs.executeScript(_tabs[0].id,{
-										code: reduxSetDataCode(options.reduxData)
-									});
+							})]);
+						})
+						.then(([windowId,_tabs])=>{
+							if(_tabs.length>0)
+								return _tabs[0];
+							else {
+								return new Promise((resolve, reject) => {
+									var timer = setTimeout(()=>{
+										browser.tabs.onCreated.removeListener(ListenOpenedTabs);
+										reject(new Error("Tab did not open"));
+									},5000);
+									function ListenOpenedTabs(tab) {
+										if(tab.windowId==windowId) {
+											clearTimeout(timer);
+											browser.tabs.onCreated.removeListener(ListenOpenedTabs);
+											resolve(tab);
+										}
+									}
+									browser.tabs.onCreated.addListener(ListenOpenedTabs);
+								});
 							}
+						})
+						.then((tab)=>{
+							weh.__declareAppTab(name,tab.id);
+							tabs[tab.id] = name;
+							if(options.reduxData)
+								return browser.tabs.executeScript(tab.id,{
+									code: reduxSetDataCode(options.reduxData)
+								});
 						}).then(resolve)
 						.catch(reject);
 
