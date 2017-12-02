@@ -90,7 +90,7 @@ function OpenPanel(name,options) {
 				if(weh.isBrowser("chrome","opera"))
 					cwcParam.focused = true;
 
-				browser.windows.create(cwcParam)
+				return browser.windows.create(cwcParam)
 					.then((window) => {
 						panels[name] = {
 							type: "window",
