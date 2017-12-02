@@ -102,46 +102,54 @@ function OpenPanel(name,options) {
 					})
 					.then(([window]) => {
 						// trick to repaint window on Firefox
-						browser.windows.update(window.id,{
-							height: window.height+1
-						})
+						// useless if auto resize
+						Promise.resolve()
 						.then(()=>{
-							return browser.windows.update(window.id,{
-								height: window.height-1
-							})
-						})
-						.then(()=>{
-							return Promise.all([window.id,browser.tabs.query({
-								windowId: window.id
-							})]);
-						})
-						.then(([windowId,_tabs])=>{
-							if(_tabs.length>0)
-								return _tabs[0];
-							else {
-								return new Promise((resolve, reject) => {
-									var timer = setTimeout(()=>{
-										browser.tabs.onCreated.removeListener(ListenOpenedTabs);
-										reject(new Error("Tab did not open"));
-									},5000);
-									function ListenOpenedTabs(tab) {
-										if(tab.windowId==windowId) {
-											clearTimeout(timer);
-											browser.tabs.onCreated.removeListener(ListenOpenedTabs);
-											resolve(tab);
-										}
-									}
-									browser.tabs.onCreated.addListener(ListenOpenedTabs);
+							if(options.reduxData && options.reduxData.autoResize)
+								return;
+							else
+								return browser.windows.update(window.id,{
+									height: window.height+1
+								})
+								.then(()=>{
+									return browser.windows.update(window.id,{
+										height: window.height-1
+									})
 								});
-							}
+						})
+						.then(()=>{
+							var promise1 = new Promise((resolve, reject) => {
+								var timer = setTimeout(()=>{
+									browser.tabs.onCreated.removeListener(ListenOpenedTabs);
+									reject(new Error("Tab did not open"));
+								},5000);
+								function ListenOpenedTabs(tab) {
+									if(tab.windowId==windowId) {
+										clearTimeout(timer);
+										browser.tabs.onCreated.removeListener(ListenOpenedTabs);
+										resolve(tab);
+									}
+								}
+								browser.tabs.onCreated.addListener(ListenOpenedTabs);
+							});
+							var promise2 = browser.tabs.query({
+								windowId: window.id
+							}).then((_tabs)=>{
+								return new Promise((resolve, reject) => {
+									if(_tabs.length>0)
+										resolve(_tabs[0]);
+								});
+							});
+							return Promise.race([promise1,promise2]);
 						})
 						.then((tab)=>{
 							weh.__declareAppTab(name,tab.id);
 							tabs[tab.id] = name;
-							if(options.reduxData)
+							if(options.reduxData) {
 								return browser.tabs.executeScript(tab.id,{
 									code: reduxSetDataCode(options.reduxData)
 								});
+							}
 						}).then(resolve)
 						.catch(reject);
 
