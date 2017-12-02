@@ -37,7 +37,7 @@ function reduxSetDataCode(data) {
 					payload: ${JSON.stringify(data)}
 				})
 			} catch(e) {
-				console.error(e);
+				console.error("store.dispatch error",e);
 				return false;
 			}
 		} ) ();
@@ -143,13 +143,32 @@ function OpenPanel(name,options) {
 							return Promise.race([promise1,promise2]);
 						})
 						.then((tab)=>{
+							if(tab.status=="loading") {
+								return new Promise((resolve, reject) => {
+									var timer = setTimeout(()=>{
+										browser.tabs.onCreated.removeListener(onUpdated);
+										reject(new Error("Tab did not complete"));
+									},5000);
+									function onUpdated(tabId,changeInfo,_tab) {
+										if(tabId == tab.id && _tab.status=="complete") {
+											clearTimeout(timer);
+											browser.tabs.onUpdated.removeListener(onUpdated);
+											resolve(_tab);
+										}
+									}
+									browser.tabs.onUpdated.addListener(onUpdated);
+								})
+							} else 
+								return tab;
+						})
+						.then((tab)=>{
 							weh.__declareAppTab(name,tab.id);
 							tabs[tab.id] = name;
-							if(options.reduxData) {
+							if(options.reduxData)
 								return browser.tabs.executeScript(tab.id,{
-									code: reduxSetDataCode(options.reduxData)
+									code: reduxSetDataCode(options.reduxData),
+									runAt: "document_idle"
 								});
-							}
 						}).then(resolve)
 						.catch(reject);
 
