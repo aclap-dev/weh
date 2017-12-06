@@ -159,7 +159,16 @@ class extends React.Component {
         if(this.state.spec.type=="float")
             value = parseFloat(value);
        	this.props.updateCurrentPref(this.props.prefName,value);
-    }
+	}
+	
+	setCustomValue(value) {
+		var event = { target: {} };
+		if(this.state.spec.type=="boolean")
+			event.target.checked = value;
+		else
+			event.target.value = value;
+		this.handleChange(event);
+	}
 
     isValid(value) {
         var spec = this.state.spec;
@@ -241,7 +250,7 @@ class extends React.Component {
                 <label className="col-3 col-form-label" htmlFor={"weh-param-"+this.paramIndex}>
                     {this.state.spec.label}</label>
                 <div className="col-8">
-                    {this.renderInput()}
+                    { this.props.renderInput && this.props.renderInput.call(this) || this.renderInput()}
                     { this.state.spec.description && (
                     <div className="form-text"><em>{ this.state.spec.description }</em></div>
                     )}
