@@ -177,6 +177,9 @@ function OpenPanel(name,options) {
 							if(focusedWindowId==window.id)
 								return;
 
+							if(!options.autoClose)
+								return;
+
 							browser.windows.getCurrent()
 								.then((currentWindow) => {
 									if(currentWindow.id!=window.id)
