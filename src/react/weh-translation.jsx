@@ -305,6 +305,11 @@ export var WehTranslationForm = connect(
 							<div style={{display:"none"}}>
 								<input type="file" accept="application/json" ref={this.setFileInput()}/>
 							</div>
+							{ this.props.footerExtra && (
+								<div className="form-control translation-footer-extra">
+									{this.props.footerExtra}
+								</div>
+							)}
 							<div className="btn-toolbar justify-content-end">
 								<div className="btn-group pull-right">
 									<button type="button"
