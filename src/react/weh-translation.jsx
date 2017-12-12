@@ -83,6 +83,12 @@ export function reducer(state=initialState,action) {
 				modified: action.payload
 			});
 			break;
+		case "RESET":
+			state = Object.assign({}, state, {
+				modified: {},
+				custom: {}
+			});
+			break;
 		case "RESTORE":
 			var customMessages = {};
 			Object.keys(action.payload).forEach((key)=>{
@@ -134,6 +140,11 @@ export var WehTranslationForm = connect(
 				return {
 					type: "IMPORT",
 					payload: data
+				}
+			},
+			reset: (data) => {
+				return {
+					type: "RESET"
 				}
 			},
 			restore: (data) => {
@@ -214,6 +225,13 @@ export var WehTranslationForm = connect(
 				self.setState({
 					filter: event.target.value
 				})
+			}
+		}
+
+		reset() {
+			var self = this;
+			return ()=>{
+				this.props.reset();
 			}
 		}
 
@@ -318,6 +336,10 @@ export var WehTranslationForm = connect(
 									<button type="button"
 										onClick={this.export()}
 										className="btn">Export</button>
+									<button type="button"
+										className="btn btn-danger"
+										onClick={this.reset()}
+										className="btn btn-danger">Reset</button>
 									<button type="button"
 										onClick={this.props.cancel}
 										className={"btn "+(this.props.isModified?"":"disabled")}>Cancel</button>
