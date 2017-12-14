@@ -175,6 +175,9 @@ class NativeMessagingApp {
 						appPort.onDisconnect.addListener(() => {
 							ProcessPending(new Error("Disconnected"));
 							self.cleanup();
+							if(self.appStatus=="checking" && !appNotFoundHandler)
+								self.onAppNotFound.notify(self.appPort && self.appPort.error || browser.runtime.lastError);
+							
 						});
 						self.state = "running";
 						ProcessPending();
@@ -231,8 +234,6 @@ class NativeMessagingApp {
 		if(self.appStatus=="checking") {
 			self.onAppNotFoundCheck.notify(self.appPort && self.appPort.error || browser.runtime.lastError);
 			self.onAppNotFoundCheck.removeAllListeners();
-			if(!appNotFoundHandler)
-				self.onAppNotFound.notify(self.appPort && self.appPort.error || browser.runtime.lastError);
 		}
 		var call;
 		while(call=self.runningCalls.shift()) {
