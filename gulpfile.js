@@ -34,6 +34,9 @@ var argv = require('yargs').argv;
 const fs = require("fs");
 const path = require("path");
 const exec = require('child_process').exec;
+const stringify = require('json-stable-stringify');
+
+const now = "" + new Date();
 
 if(process.env.wehCwd)
     process.chdir(process.env.wehCwd);
@@ -206,7 +209,7 @@ gulp.task("build-final",function(callback) {
 		.pipe(gulpif(dev,sourcemaps.write('.')))
 		.pipe(gulp.dest(buildDir))
 		.on("end",()=>{
-			fs.writeFileSync(buildDir+"/build.date",new Date());
+			fs.writeFileSync(buildDir+"/build.date",argv["force-build-date"] || now);
 			callback();
 		})
 });
@@ -299,7 +302,7 @@ gulp.task("make-i86n-keys",function(callback) {
 		Promise.all(promises)
 			.then(()=>{
 				var stream = source('weh-i18n-keys.js');
-				stream.end('module.exports = ' + JSON.stringify(keys,null,4));
+				stream.end('module.exports = ' + stringify(keys,{ space: '    ' }));
 				stream
 					.pipe(buffer())
 					.pipe(gulp.dest(buildTmpModDir))
@@ -314,10 +317,10 @@ gulp.task("make-i86n-keys",function(callback) {
 gulp.task("make-build-manifest",function(callback) {
 	const buildManifest = {
 		prod: !dev,
-		buildDate: ""+new Date(),
+		buildDate: argv["force-build-date"] || now,
 		buildOptions: ejsData
 	};
-	const buildManifestCode = "module.exports = "+JSON.stringify(buildManifest,null,4);
+	const buildManifestCode = "module.exports = "+stringify(buildManifest,{ space: '    ' });
 	fs.writeFile(buildTmpWehDir+"/weh-build.js",buildManifestCode,(err)=>{
 		if(err)
 			throw err;
@@ -427,7 +430,8 @@ gulp.task("help", function() {
         "  --onerror <command>: execute a command (like playing a sound) on errors",
 		"  --onsuccess <command>: execute a command (like playing a sound) on build success",
 		"  --buildpost <string>: if set, the build directory names are appended with '-<value>'",
-		"  --ejsdata <name=value>: define variable to be used in EJS preprocessing"
+		"  --ejsdata <name=value>: define variable to be used in EJS preprocessing",
+		"  --force-build-date <date>: force build date"
     ];
     console.log(help.join("\n"));
     process.exit(0);
