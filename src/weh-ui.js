@@ -71,7 +71,7 @@ function OpenTab(name,options) {
 	})
 }
 
-function OpenPanel(name,options) {
+function CreatePanel(name,options) {
 	return new Promise((resolve, reject) => {
 		var url = browser.extension.getURL(options.url+"?panel="+name);
 
@@ -201,6 +201,20 @@ function OpenPanel(name,options) {
 			.catch(reject);		
 	})
 }
+
+function OpenPanel(name,options) {
+	return new Promise((resolve, reject) => {
+		var url = browser.extension.getURL(options.url+"?panel="+name);
+		GotoTab(url)
+			.then((found)=>{
+				if(!found)
+					return CreatePanel(name,options);
+			})
+			.then(resolve)
+			.catch(reject);
+	})
+}
+
 
 browser.tabs.onRemoved.addListener((tabId)=>{
 	weh.__closeByTab(tabId);
