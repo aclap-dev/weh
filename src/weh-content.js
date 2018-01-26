@@ -14,7 +14,7 @@ var weh = require('weh');
 var browser = weh.browser;
 
 /* extracting running parameters from URL */
-var urlParams = function () {
+var urlParams = typeof _wehPanelName !== "undefined" && { panel: _wehPanelName } || function () {
 	var m = /^([^\?]*)(?:\?(.*))?$/.exec(window.location.href);
 	var params = {};
 	if (m[2]) m[2].split("&").forEach(function (paramExpr) {
