@@ -259,6 +259,5 @@ function Close(name) {
 
 module.exports = {
 	open: Open,
-	close: Close,
-	panels: () => Object.getKeys(panels)
+	close: Close
 }

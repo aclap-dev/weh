@@ -101,6 +101,7 @@ weh.__closeByTab = function(tabId) {
 
 weh._ = require('weh-i18n').getMessage;
 weh.ui = require('weh-ui');
+weh.openedContents = () => Object.keys(apps);
 
 var wehPrefs = require('weh-prefs');
 weh.prefs = wehPrefs;
