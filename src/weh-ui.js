@@ -124,7 +124,7 @@ function CreatePanel(name,options) {
 									reject(new Error("Tab did not open"));
 								},5000);
 								function ListenOpenedTabs(tab) {
-									if(tab.windowId==windowId) {
+									if(tab.windowId==window.id) {
 										clearTimeout(timer);
 										browser.tabs.onCreated.removeListener(ListenOpenedTabs);
 										resolve(tab);
