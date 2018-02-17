@@ -28,22 +28,6 @@ function Open(name,options) {
 	}
 }
 
-function reduxSetDataCode(data) {
-	return `
-		( () => {
-			try {
-				store.dispatch({
-					type: "SET_WEH_DATA",
-					payload: ${JSON.stringify(data)}
-				})
-			} catch(e) {
-				console.error("store.dispatch error",e);
-				return false;
-			}
-		} ) ();
-	`;
-}
-
 function OpenTab(name,options) {
 	return new Promise((resolve, reject) => {
 		var url = browser.extension.getURL(options.url+"?panel="+name);
@@ -60,10 +44,18 @@ function OpenTab(name,options) {
 								tabId: tab.id
 							}
 							tabs[tab.id] = name;
-							if(options.reduxData)
-								return browser.tabs.executeScript(tab.id,{
-									code: reduxSetDataCode(options.reduxData)
-								});
+							if(options.initData) {
+								return new Promise((resolve, reject) => {
+									const onUpdated = (tabId,changeInfo) => {
+										if(tabId==tab.id && changeInfo.status=="complete") {
+											weh.rpc.call(name,"wehInitData",options.initData)
+												.then(resolve,reject);
+											browser.tabs.onUpdated.removeListener(onUpdated);
+										}
+									}
+									browser.tabs.onUpdated.addListener(onUpdated);
+								})
+							}
 						});
 			})
 			.then(resolve)
@@ -105,7 +97,7 @@ function CreatePanel(name,options) {
 						// useless if auto resize
 						Promise.resolve()
 						.then(()=>{
-							if(options.reduxData && options.reduxData.autoResize)
+							if(options.initData && options.initData.autoResize)
 								return;
 							else
 								return browser.windows.update(window.id,{
@@ -164,11 +156,8 @@ function CreatePanel(name,options) {
 						.then((tab)=>{
 							weh.__declareAppTab(name,tab.id);
 							tabs[tab.id] = name;
-							if(options.reduxData)
-								return browser.tabs.executeScript(tab.id,{
-									code: reduxSetDataCode(options.reduxData),
-									runAt: "document_idle"
-								});
+							if(options.initData)
+								return weh.rpc.call(name,"wehInitData",options.initData);
 						}).then(resolve)
 						.catch(reject);
 
