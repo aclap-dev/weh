@@ -246,7 +246,12 @@ function Close(name) {
 		wehRpc.call(name,"close");
 }
 
+function IsOpen(name) {
+	return !!panels[name];
+}
+
 module.exports = {
 	open: Open,
-	close: Close
+	close: Close,
+	isOpen: IsOpen
 }
