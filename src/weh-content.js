@@ -67,7 +67,15 @@ var readyPromises = [
 if(usePrefs) {
 	let wehPrefs = require('weh-prefs');
 	weh.prefs = wehPrefs;
-	wehPrefs.assign({});
+	let initialPrefs = {};
+	try {
+		let prefsStr = localStorage.getItem("weh-prefs");
+		if(prefsStr)
+			JSON.parse(prefsStr).forEach((entry)=>{
+				initialPrefs[entry.name] = entry.value;
+			});
+	} catch(e) {}
+	wehPrefs.assign(initialPrefs);
 	wehPrefs.on("", {
 		pack: true
 	}, function (newPrefs, oldPrefs) {
