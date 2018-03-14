@@ -219,7 +219,7 @@ Prefs.prototype = {
 				/* falls through */
 			case "float":
 				if(spec.type=="float") {
-					if(!/^-?[0-9]+(\.[0-9]+)$/.test(value))
+					if(!/^-?[0-9]+(\.[0-9]+)?|(\.[0-9]+)$/.test(value))
 						return false;
 					if(isNaN(parseFloat(value)))
 						return false;
