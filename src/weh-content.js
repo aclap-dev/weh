@@ -49,7 +49,6 @@ port.onMessage.addListener((message) => {
 weh.rpc.call("appStarted", {
 		uiName: weh.uiName,
 		usePrefs: usePrefs
-	}).then(function () {
 	}).catch(function (err) {
 		console.info("appStarted failed", err);
 	});
@@ -108,10 +107,35 @@ Promise.all(readyPromises)
 		return weh.rpc.call("appReady",{
 			uiName: weh.uiName
 		});
+	}).then(function () {
+		if(triggerRequested) {
+			let result = triggerArgs;
+			triggerArgs = undefined;
+			triggerRequested = false;
+			weh.doTrigger(result);
+		}
 	})
 	.catch((err)=>{
 		console.error("app not ready:",err);
 	});
+
+var triggerRequested = false;
+var triggerArgs = undefined;
+var appStarted = false;
+
+weh.doTrigger = function (result) {
+	return weh.rpc.call("trigger",weh.uiName,result)
+		.catch(()=>{});
+}
+	
+weh.trigger = function (result) {
+	if(appStarted)
+		return weh.doTrigger(result);
+	else {
+		triggerArgs = result;
+		triggerRequested = true;
+	}
+}
 
 /* setting up translation */
 weh._ = require("weh-i18n").getMessage;
@@ -134,10 +158,5 @@ weh.setPageTitle = function (title) {
 		titleElement.removeChild(titleElement.firstChild);
 	titleElement.appendChild(document.createTextNode(title));
 };
-
-weh.trigger = function (result) {
-	return weh.rpc.call("trigger",weh.uiName,result)
-		.catch(()=>{});
-}
 
 module.exports = weh;
