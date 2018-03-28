@@ -295,7 +295,7 @@ export var WehTranslationForm = connect(
 					<form className="weh-shf"
 						onChange={this.handleChange}
 						role="form">
-						<WehHeader>
+						<WehHeader image={this.props.titleImage || "images/icon-32.png"}>
 							<div className="col-sm-4 float-sm-right" style={{display:"inline-flex",marginTop:"2px"}}>
 								<input className="form-control"
 									onChange={this.handleSearchChange}
