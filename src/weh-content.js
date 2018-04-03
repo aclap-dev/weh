@@ -108,6 +108,7 @@ Promise.all(readyPromises)
 			uiName: weh.uiName
 		});
 	}).then(function () {
+		appStarted = true;
 		if(triggerRequested) {
 			let result = triggerArgs;
 			triggerArgs = undefined;
