@@ -41,8 +41,8 @@ function MessagesReducer(state={
 		case "NEW_MESSAGE": {
 				state = Object.assign({},state);
 				let index = state.raw.length;
-				let callKey = (action.payload.from||"!") + "#" +
-					(action.payload.to||"!") + "#" +
+				let callKey = (action.payload.caller||"!") + "#" +
+					(action.payload.callee||"!") + "#" +
 					action.payload.rid;
 				if(action.payload.type=="call") {
 					let calls = Object.assign({},state.calls);
@@ -317,6 +317,10 @@ var Message = connect(
 						</div>
 					);
 			}
+			if(obj === null)
+				return (
+					<div className="react-json-view scalar-view">null</div>	
+				);
 			return (
 				<ReactJson src={obj} 
 					name={null}
