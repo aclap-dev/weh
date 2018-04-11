@@ -140,7 +140,7 @@ function CreatePanel(name,options) {
 									var timer = setTimeout(()=>{
 										browser.tabs.onCreated.removeListener(onUpdated);
 										reject(new Error("Tab did not complete"));
-									},5000);
+									},60000);
 									function onUpdated(tabId,changeInfo,_tab) {
 										if(tabId == tab.id && _tab.status=="complete") {
 											clearTimeout(timer);
