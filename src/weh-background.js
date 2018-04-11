@@ -191,7 +191,7 @@ weh.wait = (id,options={}) => {
 			timer: setTimeout(()=>{
 				delete waiting[id];
 				reject(new Error("Waiter for "+id+" timed out"));
-			}, options.timeout || 12000)
+			}, options.timeout || 60000)
 		}
 	});
 }
