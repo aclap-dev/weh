@@ -272,6 +272,11 @@ gulp.task("build-tmp-install",function() {
   		.pipe(install());
 });
 
+gulp.task("build-tmp-copylock",function() {
+	return gulp.src(prjDir+'/package-lock.json')
+		.pipe(gulp.dest(buildTmpDir));
+});
+
 gulp.task("build-tmp-weh",function() {
 	return ProcessFiles(gulp.src(__dirname+"/src/**/*"))
 		.pipe(gulp.dest(buildTmpWehDir));
@@ -332,6 +337,7 @@ gulp.task("build",function(callback) {
 	return runSequence(
 		["build-tmp-src","build-tmp-src-mod","build-tmp-weh","build-locales","make-i86n-keys"],
 		["make-build-manifest"],
+		["build-tmp-copylock"],
 		["build-tmp-install"],
 		["build-final"], 
 		callback);
