@@ -138,7 +138,7 @@ function CreatePanel(name,options) {
 							if(tab.status=="loading") {
 								return new Promise((resolve, reject) => {
 									var timer = setTimeout(()=>{
-										browser.tabs.onCreated.removeListener(onUpdated);
+										browser.tabs.onUpdated.removeListener(onUpdated);
 										reject(new Error("Tab did not complete"));
 									},60000);
 									function onUpdated(tabId,changeInfo,_tab) {
