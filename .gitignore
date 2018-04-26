@@ -8,3 +8,6 @@ make-inspector.sh
 .DS_Store
 ._.DS_Store
 make-inspector-sign.sh
+inspector-tmp/
+inspector-builds/
+build-inspector-firefox.sh
