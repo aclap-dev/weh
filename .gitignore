@@ -11,3 +11,5 @@ make-inspector-sign.sh
 inspector-tmp/
 inspector-builds/
 build-inspector-firefox.sh
+profile/
+run-inspector.sh
