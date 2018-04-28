@@ -2,8 +2,8 @@
 	"manifest_version": 2,
 	"name": "Weh Inspector",
 	"default_locale": "en_US",
-	"version": "2.1",
-	"version_name": "2.1",
+	"version": "2.1.1",
+	"version_name": "2.1.1",
 	"author": "Michel Gutierrez",
 	"description": "Trace remote procedure calls on Weh 2 addons",
 	"background": {
@@ -26,7 +26,8 @@
 		"tabs",
 		"contextMenus",
 		"management",
-		"storage"
+		"storage",
+		"downloads"
 	],
 	"applications": {
 		"gecko": {
