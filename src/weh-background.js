@@ -49,6 +49,10 @@ browser.runtime.onConnect.addListener((port) => {
 			Object.assign(appOptions,message._args[0],{ port: port });
 			if(message._method=="appReady") {
 				appOptions.ready = true;
+				if(appOptions.initData)
+					setTimeout(()=>{
+						weh.rpc.call(app,"wehInitData",appOptions.initData);	
+					},0);
 				var wait = waiting[app];
 				if(wait && wait.timer) {
 					clearTimeout(wait.timer);
@@ -75,12 +79,10 @@ browser.runtime.onConnect.addListener((port) => {
 	});
 });
 
-weh.__declareAppTab = function(app,tabId) {
+weh.__declareAppTab = function(app,data) {
 	if(!apps[app])
 		apps[app] = {};
-	Object.assign(apps[app],{
-		tab: tabId
-	});
+	Object.assign(apps[app],data);
 }
 
 weh.__closeByTab = function(tabId) {

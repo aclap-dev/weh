@@ -38,24 +38,12 @@ function OpenTab(name,options) {
 							url: url,
 						})
 						.then(function(tab) {
-							weh.__declareAppTab(name,tab.id);
+							weh.__declareAppTab(name,{tab:tab.id,initData:options.initData});
 							panels[name] = {
 								type: "tab",
 								tabId: tab.id
 							}
 							tabs[tab.id] = name;
-							if(options.initData) {
-								return new Promise((resolve, reject) => {
-									const onUpdated = (tabId,changeInfo) => {
-										if(tabId==tab.id && changeInfo.status=="complete") {
-											weh.rpc.call(name,"wehInitData",options.initData)
-												.then(resolve,reject);
-											browser.tabs.onUpdated.removeListener(onUpdated);
-										}
-									}
-									browser.tabs.onUpdated.addListener(onUpdated);
-								})
-							}
 						});
 			})
 			.then(resolve)
@@ -154,10 +142,8 @@ function CreatePanel(name,options) {
 								return tab;
 						})
 						.then((tab)=>{
-							weh.__declareAppTab(name,tab.id);
+							weh.__declareAppTab(name,{tab:tab.id,initData:options.initData});
 							tabs[tab.id] = name;
-							if(options.initData)
-								return weh.rpc.call(name,"wehInitData",options.initData);
 						}).then(resolve)
 						.catch(reject);
 
