@@ -23,6 +23,7 @@ const gutil = require('gulp-util');
 const install = require('gulp-install');
 const merge = require('merge-stream');
 const ejs = require('gulp-ejs');
+const sort = require('gulp-sort');
 
 const package = require('./package.json');
 const webpack = require('webpack');
@@ -201,6 +202,7 @@ gulp.task("build-final",function(callback) {
 		return;
 	}
 	gulp.src(buildTmpAddonDir+"/**/*")
+		.pipe(sort())
 		.pipe(gulpif('*.js',gulpif(dev,sourcemaps.init({loadMaps:true}))))
 		.pipe(gulpif("*.js",WebPack()))
 		.on("error",function(error) {
