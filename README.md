@@ -126,7 +126,7 @@ Pre-processing is useful if you want to generate different builds from the same 
 ### weh preferences
 
 Preferences are to be formally defined in order to be used in your add-on. An example of preferences description could be:
-```
+```js
 weh.prefs.declare([{
     name: "myparam_string",
     type: "string",
@@ -176,7 +176,7 @@ You should also define a couple of human viewable strings associated to each par
 - `weh_prefs_description_<parameter name>` defines an optional longer description for this parameter
 
 Example (`locales/en_US/messages.json`):
-```
+```js
     "weh_prefs_label_myparam_string": {
         "message": "String parameter"
     },
@@ -225,7 +225,7 @@ All the functions return promises. If a declared function returns something othe
 Functions are declared on the called side using `weh.rpc.listen()` and are called with `weh.rpc.call()`.
 
 For instance, the background can define a function like this:
-```
+```js
 weh.rpc.listen({
 	my_function: (a,b) => {
 		return a + b;
@@ -234,7 +234,7 @@ weh.rpc.listen({
 ```
 
 and a content script can call the function this way:
-```
+```js
 weh.call("my_function",39,3)
 	.then((result)=>{
 		console.info("=",result);
@@ -251,7 +251,7 @@ If the called function does not exists, throw an exception or return explicitly 
 
 *weh* is also very useful when dealing with native messaging.
 
-```
+```js
 var nativeApp = require('weh-natmsg')("com.example.myapp");
 
 nativeApp.call("my_function",...params)
@@ -264,14 +264,14 @@ nativeApp.call("my_function",...params)
 ```
 
 You can catch all errors due to the native app not being installed (or at least not being callable):
-```
+```js
 nativeApp.onAppNotFound.addListener((err)=>{
 	// for instance, open a tab to a site where to download the app
 })
 ```
 
 You can just check whether the app is present, without triggering the `onAppNotFound()` if it is not:
-```
+```js
 nativeApp.callCatchAppNotFound((err)=>{
 	// this is called if the app could not be launched
 },"my_function",...params);
@@ -285,7 +285,7 @@ For now, the only implementation of such a native is available on the [`vdhcoapp
 
 `weh.ui` provides the ability to open a tab or a panel, so that the created content can directly be callable from the background using `weh.rpc`.
 
-```
+```js
 weh.ui.open("some_name",{
 	url: "content/content.html",
 	type: "tab"
