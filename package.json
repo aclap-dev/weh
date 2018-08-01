@@ -1,6 +1,6 @@
 {
   "name": "weh",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Toolkit for developing WebExtensions add-ons on Firefox, Chrome, Edge, Opera and Vivaldi",
   "keywords": [
     "webextensions",
