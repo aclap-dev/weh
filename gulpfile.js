@@ -387,6 +387,7 @@ gulp.task("default", function(callback) {
 
     console.info("Directories:");
     console.info("  src:",srcDir);
+    console.info("  src-modules:",srcModDir);
     console.info("  build:",buildDir);
     console.info("  locales:",locDir);
     console.info("  etc:",etcDir);
@@ -430,7 +431,9 @@ gulp.task("help", function() {
         "default commands: clean + build + watch",
         "",
         "options:",
-        "  --prjdir <dir>: project directory (required for most commands)",
+		"  --prjdir <dir>: project directory (required for most commands)",
+		"  --srcdir <sub-dir>: add-on source sub-directory (relative to project directory), defaults to 'src'",
+		"  --srcmoddir <sub-dir>: add-on source modules sub-directory (relative to project directory), defaults to 'src-modules'",
         "  --prod: addon generated for production",
         "  --template <template>: template to be used when creating a new project",
         "  --no-watch: do not generate builds dynamically",
