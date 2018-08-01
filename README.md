@@ -4,14 +4,13 @@
 
 This toolkit speeds up browser add-ons development by providing a number of facilities for WebExtensions-based (Firefox, Chrome, Opera and Edge) extensions.
 
-This is not a framework in the sense that the developer does not have to embrace all the provided utilities and there is not many architectural constraints to follow in order to take benefit of the tool.
+This is not a framework in the sense that the developer does not have to embrace all the provided utilities and there are not many architectural constraints to follow in order to take benefit of the tool.
 
 The build system generates automatically a directory you can directly install into your browser, compiling
 automatically CoffeeScript, TypeScript and JSX to Javascript, Sass, Less and Stylus to CSS.
 
-**weh** also provides some libraries that goes into your addon to ease a number of common tasks like managing preferences and two-way communications between the extension background and its user interface content pages, 
-providing a way for the end-user to customize any string in the add-on user interface. Developing the user interface using ReactJS is also simplified but you may choose 
-not to use this library.
+**weh** also provides some libraries that go into your addon to ease a number of common tasks like managing preferences and two-way communications between the extension background and its user interface content pages, 
+providing a way for the end-user to customize any string in the add-on user interface. Developing the user interface using ReactJS is also simplified but you may choose not to use this library.
 
 In addition, an inspector application (under the form of a **weh**-based extension) is provided to monitor other **weh** extensions in real-time.
 
@@ -92,11 +91,10 @@ Also note that you can change the `src` directory by specifying a directory path
 
 Declaring `weh` from a background script: `const weh = require('weh-background');`
 From a content script: `const weh = require('weh-content');`
-From a web worker: `const weh = 
 
 You can then access a number of services from the `weh` variable:
 
-- `weh.rpc`: making function calls (both ways) through various components completely transparent: beetwen background and content, background and workers, background and native apps, background and injected-content
+- `weh.rpc`: making function calls (both ways) through various components completely transparent: between background and content, background and workers, background and native apps, background and injected-content
 - `weh.prefs`: preferences system
 - `weh.i18n`: translation system
 - `weh.ui`: content management from background utilities
@@ -115,7 +113,7 @@ be transformed to `myscript.js` before being processed. You can specify one or s
 for the EJS resolution using the `--ejsdata` option.
 
 The EJS pre-processing occurs in a first place, so a file named `myscript.ts.ejs` will first be EJS-processed, then
-compiled using Typescript, and will endup in the build directory as `myscript.js`.
+compiled using Typescript, and will end up in the build directory as `myscript.js`.
 
 Any text file in the `src` directory can be processed with EJS, not only js and css-like.
 
@@ -168,7 +166,7 @@ weh.prefs.declare([{
 For each parameter, you must provide at least `name`, `type` and `defaultValue`. `type` must be one of `string`, `integer`, `float`, `boolean` or
 `choice`. A specific preference parameter can then be accessed, as read or write, through `weh.prefs["parameter name"]`.
 
-You can install preferences listeners using `weh.prefs.on(whatToWatch,callback)` and uninstall listeners using `weh.prefs.off` with the same parameters. `whatToWatch` uses a dotted notation. For instance, listening to `""`, `"a"`, `"a.b"` or `"a.b.c"` will trigger the callback whenever
+You can install preferences listeners using `weh.prefs.on(whatToWatch,callback)` and un-install listeners using `weh.prefs.off` with the same parameters. `whatToWatch` uses a dotted notation. For instance, listening to `""`, `"a"`, `"a.b"` or `"a.b.c"` will trigger the callback whenever
 parameter `a.b.c` is modified. Note that the preferences listeners are available from both background and local content.
 
 You should also define a couple of human viewable strings associated to each parameter in `locales/<locale>/messages.json`:
