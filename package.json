@@ -1,6 +1,6 @@
 {
   "name": "weh",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Toolkit for developing WebExtensions add-ons on Firefox, Chrome, Edge, Opera and Vivaldi",
   "keywords": [
     "webextensions",
@@ -38,7 +38,7 @@
   "dependencies": {
     "babel-preset-es2015": "6.24.1",
     "babel-preset-react": "6.24.1",
-    "bootstrap": "4.0.0",
+    "bootstrap": "4.1.3",
     "css-loader": "0.28.10",
     "file-loader": "0.11.2",
     "gulp": "3.9.1",
