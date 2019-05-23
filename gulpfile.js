@@ -1,12 +1,12 @@
 
 const gulp = require("gulp");
 const clean = require('gulp-clean');
-const runSequence = require('run-sequence');
+const runSequence = require('gulp4-run-sequence');
 const rename = require("gulp-rename");
 const through = require('through2');
 const gulpif = require('gulp-if');
 const lazypipe = require('lazypipe');
-const buffer = require("vinyl-buffer");
+const vinylString = require("vinyl-string");
 const source = require('vinyl-source-stream');
 const filter = require('gulp-filter');
 const debug = require('gulp-debug');
@@ -139,7 +139,7 @@ var WebPack = (function() {
 				module: { 
 					loaders: [{
 						test: /\.css$/,
-						loader: __dirname+"/node_modules/style-loader!"+__dirname+"/node_modules/css-loader?importLoaders=1"
+						loader: __dirname+"/node_modules/style-loader!"+__dirname+"/node_modules/css-loader?importLoaders=true"
 					},{ 
 						test: /\.(png|woff|woff2|eot|ttf|svg)$/, 
 						loaders: [__dirname+"/node_modules/url-loader?limit=100000"]
@@ -308,10 +308,9 @@ gulp.task("make-i86n-keys",function(callback) {
 		});
 		Promise.all(promises)
 			.then(()=>{
-				var stream = source('weh-i18n-keys.js');
-				stream.end('module.exports = ' + stringify(keys,{ space: '    ' }));
-				stream
-					.pipe(buffer())
+				vinylString('module.exports = ' + stringify(keys,{ space: '    ' }),{
+					path: 'weh-i18n-keys.js'
+				})
 					.pipe(gulp.dest(buildTmpModDir))
 					.on('end',callback);
 			})
@@ -361,13 +360,14 @@ gulp.task("watch-src",function(callback) {
 		);
 });
 
-gulp.task("watch", function() {
-	gulp.watch([srcDir+"/**/*",srcModDir+"/**/*","src/**/*",__dirname+"/src/**/*"],["watch-src"]);
-	gulp.watch(locDir+"/**/*",["watch-locales"]);
+gulp.task("watch", function(callback) {
+	gulp.watch([srcDir+"/**/*",srcModDir+"/**/*","src/**/*",__dirname+"/src/**/*"],gulp.series("watch-src"));
+	gulp.watch(locDir+"/**/*",gulp.series("watch-locales"));
+	callback();
 });
 
 // list available templates
-gulp.task("templates",function() {
+gulp.task("templates",function(callback) {
     var templates = fs.readdirSync(path.join(__dirname,"templates"));
     templates.forEach(function(template) {
         var manifest = null;
@@ -375,8 +375,8 @@ gulp.task("templates",function() {
             manifest = JSON.parse(fs.readFileSync(path.join(__dirname,"templates",template,"src/manifest.json"),"utf8"));
         } catch(e) {}
         console.info(template+":",manifest && manifest.description ? manifest.description : "no description found");
-    });
-    process.exit(0);
+	});
+	callback();
 });
 
 gulp.task("default", function(callback) {
@@ -416,7 +416,7 @@ gulp.task("init", function(callback) {
 });
 
 // get some help
-gulp.task("help", function() {
+gulp.task("help", function(callback) {
     var help = [
 	"weh version "+package.version,
         "usage: gulp [<commands>] [<options>]",
@@ -444,8 +444,8 @@ gulp.task("help", function() {
 		"  --ejsdata <name=value>: define variable to be used in EJS preprocessing",
 		"  --force-build-date <date>: force build date"
     ];
-    console.log(help.join("\n"));
-    process.exit(0);
+	console.log(help.join("\n"));
+	callback();
 });
 
 // copy template directory when creating new project
