@@ -59,7 +59,7 @@
     "gulp-typescript": "5.0.1",
     "gulp4-run-sequence": "0.3.3",
     "install": "0.10.4",
-    "jquery": "3.4.1",
+    "jquery": "3.5.0",
     "json-stable-stringify": "1.0.1",
     "lazypipe": "1.0.1",
     "merge-stream": "1.0.1",
