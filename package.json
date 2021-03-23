@@ -63,7 +63,7 @@
     "json-stable-stringify": "1.0.1",
     "lazypipe": "1.0.1",
     "merge-stream": "1.0.1",
-    "npm": "6.9.0",
+    "npm": "6.14.6",
     "popper.js": "1.12.9",
     "react": "16.2.0",
     "react-dom": "16.2.0",
