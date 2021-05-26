@@ -1,6 +1,6 @@
 {
   "name": "weh",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Toolkit for developing WebExtensions add-ons on Firefox, Chrome, Edge, Opera and Vivaldi",
   "keywords": [
     "webextensions",
@@ -38,10 +38,10 @@
   "dependencies": {
     "babel-preset-es2015": "6.24.1",
     "babel-preset-react": "6.24.1",
-    "bootstrap": "4.1.3",
+    "bootstrap": "4.3.1",
     "css-loader": "^2.1.1",
     "file-loader": "0.11.2",
-    "gulp": "4.0.2",
+    "gulp": "^4.0.2",
     "gulp-babel": "^6.1.3",
     "gulp-clean": "^0.4.0",
     "gulp-coffee": "^2.3.5",
@@ -73,18 +73,20 @@
     "redux-form": "^7.3.0",
     "redux-logger": "^3.0.6",
     "run-sequence": "^2.2.1",
-    "style-loader": "^0.18.2",
+    "terser-webpack-plugin": "^5.1.2",
     "through2": "^2.0.3",
     "typescript": "^2.7.2",
-    "uglifyjs-webpack-plugin": "^2.2.0",
     "url-loader": "^1.1.2",
     "vinyl-buffer": "^1.0.1",
     "vinyl-named": "^1.1.0",
     "vinyl-source-stream": "^1.1.2",
     "vinyl-string": "^1.0.2",
     "webextension-polyfill": "^0.1.2",
-    "webpack": "^3.11.0",
+    "webpack": "^5.37.1",
     "webpack-stream": "^5.2.1",
     "yargs": "^17.0.1"
+  },
+  "devDependencies": {
+    "style-loader": "^0.18.2"
   }
 }
