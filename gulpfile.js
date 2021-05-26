@@ -28,7 +28,7 @@ const sort = require('gulp-sort');
 const package = require('./package.json');
 const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
-const uglify = require("uglifyjs-webpack-plugin");
+const uglify = require("terser-webpack-plugin");
 
 const named = require('vinyl-named');
 var argv = require('yargs').argv;
@@ -137,12 +137,31 @@ var WebPack = (function() {
 					],
 				},
 				module: { 
-					loaders: [{
+					rules: [{
 						test: /\.css$/,
-						loader: __dirname+"/node_modules/style-loader!"+__dirname+"/node_modules/css-loader?importLoaders=true"
+						use: [  __dirname+"/node_modules/style-loader", __dirname+"/node_modules/css-loader"
+							// [style-loader](/loaders/style-loader)
+							// { loader: __dirname+"/node_modules/style-loader!"+__dirname+"/node_modules/css-loader?importLoaders=true" },
+							//{ loader: 'style-loader' },
+							// [css-loader](/loaders/css-loader)
+							/*
+							{
+							  loader: 'css-loader',
+							  options: {
+								modules: true
+							  }
+							},
+							*/
+							// [sass-loader](/loaders/sass-loader)
+							//{ loader: 'sass-loader' }
+						  ]
+				  
+						//loader: __dirname+"/node_modules/style-loader!"+__dirname+"/node_modules/css-loader?importLoaders=true"
+/*
 					},{ 
 						test: /\.(png|woff|woff2|eot|ttf|svg)$/, 
-						loaders: [__dirname+"/node_modules/url-loader?limit=100000"]
+						rules: [__dirname+"/node_modules/url-loader?limit=100000"]
+*/
 					}
 				]},
 				plugins: dev ? [
