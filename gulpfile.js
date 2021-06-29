@@ -140,7 +140,7 @@ var WebPack = (function() {
 					rules: [
 						{
 						test: /\.css$/,
-						use: [ __dirname+"/node_modules/css-loader"],
+						use: [ __dirname+"/node_modules/style-loader", __dirname+"/node_modules/css-loader"],
 					},{ 
 						test: /\.(png|woff|woff2|eot|ttf|svg)$/, 
 						use: [__dirname+"/node_modules/url-loader?limit=100000"]
