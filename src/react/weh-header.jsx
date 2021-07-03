@@ -28,6 +28,8 @@ export default class WehHeader extends React.Component {
 		var title;
 		if(this.props.title)
 			title = this.props.title;
+		else if(/^__MSG_.*_$/.test(manifest.name))
+			title = weh._(manifest.name)
 		else
 			title = manifest.name;
 
