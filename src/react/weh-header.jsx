@@ -16,8 +16,6 @@ import shfCss from 'css/weh-shf.css';
 
 import weh from 'weh-content';
 
-var manifest = weh.browser.runtime.getManifest();
-
 export default class WehHeader extends React.Component {
 
 	close() {
@@ -28,8 +26,6 @@ export default class WehHeader extends React.Component {
 		var title;
 		if(this.props.title)
 			title = this.props.title;
-		else if(/^__MSG_.*_$/.test(manifest.name))
-			title = weh._(manifest.name)
 		else
 			title = manifest.name;
 

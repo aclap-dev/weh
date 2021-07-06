@@ -41,11 +41,6 @@ function Initialize() {
 	} catch(e) {}
 	initialState.custom = custom;
 	initialState.keys = Object.keys(i18nKeys);
-	if(/^__MSG_.*_$/.test(manifest.name)) { // we do not want the extension name to be translated
-		var index = initialState.keys.indexOf(manifest.name);
-		if(index>=0)
-			initialState.keys.splice(index,1); 
-	}
 	initialState.modified = {};
 }
 Initialize();
