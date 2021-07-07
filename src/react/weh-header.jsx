@@ -16,6 +16,8 @@ import shfCss from 'css/weh-shf.css';
 
 import weh from 'weh-content';
 
+var manifest = weh.browser.runtime.getManifest();
+
 export default class WehHeader extends React.Component {
 
 	close() {
