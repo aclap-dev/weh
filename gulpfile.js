@@ -124,6 +124,13 @@ var WebPack = (function() {
 		})
 		.pipe(function() {
 			return webpackStream({
+				optimization: {
+					chunkIds: "deterministic",	
+					minimize: true,
+					runtimeChunk: "single",
+					mangleExports: "deterministic",
+					moduleIds: "size",
+				},
 				context: srcDir,
 				output: {
 					filename: '[name].js'
