@@ -49,7 +49,7 @@
     "gulp-clean": "^0.4.0",
     "gulp-coffee": "^2.3.5",
     "gulp-debug": "^3.2.0",
-    "gulp-ejs": "^3.1.2",
+    "gulp-ejs": "^5.1.0",
     "gulp-filter": "^7.0.0",
     "gulp-if": "^2.0.2",
     "gulp-install": "^1.1.0",
