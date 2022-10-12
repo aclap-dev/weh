@@ -127,7 +127,9 @@ var WebPack = (function() {
 				optimization: {
 					chunkIds: "deterministic",	
 					minimize: true,
+					/* !!! this makes chrome builds defective !!!
 					runtimeChunk: "single",
+					*/
 					mangleExports: "deterministic",
 					moduleIds: "size",
 				},
