@@ -24,6 +24,14 @@ if(typeof browser == "undefined" && typeof chrome !== "undefined" && chrome.runt
         browserType = "firefox";
 exports.browserType = browserType;
 
+// Monkey-patching to support MV2 & MV3.
+// browser.action is a MV3 features equivalent to MV2' browserAction.
+// There doesn't seem to be a path-forward to support that in webextension-polyfill:
+// https://github.com/mozilla/webextension-polyfill/issues/329
+if (typeof exports.browser.action == "undefined") {
+  exports.browser.action = exports.browser.browserAction;
+}
+
 exports.isBrowser = (...args) => {
 	for(var i=0; i<args.length; i++)
 		if(args[i]==exports.browserType)

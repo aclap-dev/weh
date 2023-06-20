@@ -30,7 +30,7 @@ function Open(name,options) {
 
 function OpenTab(name,options) {
 	return new Promise((resolve, reject) => {
-		var url = browser.extension.getURL(options.url+"?panel="+name);
+		var url = browser.runtime.getURL(options.url+"?panel="+name);
 		GotoTab(url)
 			.then(function(foundTab) {
 				if(!foundTab)
@@ -53,7 +53,7 @@ function OpenTab(name,options) {
 
 function CreatePanel(name,options) {
 	return new Promise((resolve, reject) => {
-		var url = browser.extension.getURL(options.url+"?panel="+name);
+		var url = browser.runtime.getURL(options.url+"?panel="+name);
 
 		browser.windows.getCurrent()
 			.then((currentWindow) => {
@@ -179,7 +179,7 @@ function CreatePanel(name,options) {
 
 function OpenPanel(name,options) {
 	return new Promise((resolve, reject) => {
-		var url = browser.extension.getURL(options.url+"?panel="+name);
+		var url = browser.runtime.getURL(options.url+"?panel="+name);
 		GotoTab(url)
 			.then((found)=>{
 				if(!found)
