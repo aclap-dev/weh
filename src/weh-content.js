@@ -54,71 +54,48 @@ weh.rpc.call("appStarted", {
 	});
 
 /* initializing */
-var readyPromises = [
-	new Promise((resolve,reject)=>{
-		window.addEventListener("DOMContentLoaded", function () {
-			resolve();
-		});
-		
-	})
-];
+let onDOMLoaded = new Promise((resolve, _) => {
+  window.addEventListener("DOMContentLoaded", resolve);
+});
 
-if(usePrefs) {
-	let wehPrefs = require('weh-prefs');
-	weh.prefs = wehPrefs;
-	let initialPrefs = {};
-	try {
-		let prefsStr = localStorage.getItem("weh-prefs");
-		if(prefsStr)
-			JSON.parse(prefsStr).forEach((entry)=>{
-				initialPrefs[entry.name] = entry.value;
-			});
-	} catch(e) {}
-	wehPrefs.assign(initialPrefs);
-	wehPrefs.on("", {
-		pack: true
-	}, function (newPrefs, oldPrefs) {
-		weh.rpc.call("prefsSet",newPrefs);
-	});
-	readyPromises.push(new Promise((resolve,reject)=>{
-		weh.rpc.call("prefsGetSpecs")
-			.then(function (specs) {
-				wehPrefs.declare(specs);
-				return weh.rpc.call("prefsGetAll");
-			})
-			.then((allPrefs)=>{
-				wehPrefs.assign(allPrefs);
-				wehPrefs.forceNotify(false);
-				resolve();
-			})
-		.catch(reject);
-	}));
-	weh.rpc.listen({
-		setPrefs: (prefs) => {
-			wehPrefs.assign(prefs);
-		}
-	});
+async function init_prefs() {
+  let wehPrefs = require('weh-prefs');
+  weh.prefs = wehPrefs;
+  let entries = await browser.storage.local.get("weh-prefs");
+  let initialPrefs = entries["weh-prefs"] || {};
+  wehPrefs.assign(initialPrefs);
+  wehPrefs.on("", { pack: true }, (newPrefs, oldPrefs) => {
+    weh.rpc.call("prefsSet",newPrefs);
+  });
+  weh.rpc.listen({ setPrefs: (prefs) => {
+    wehPrefs.assign(prefs);
+  } });
+  let specs = await weh.rpc.call("prefsGetSpecs");
+  wehPrefs.declare(specs);
+  let all_prefs = await weh.rpc.call("prefsGetAll");
+  wehPrefs.assign(all_prefs);
+  wehPrefs.forceNotify(false);
+}
 
+let pref_promise = Promise.resolve();
+if (usePrefs) {
+  pref_promise = init_prefs();
 }
 
 /* notifies app ready: DOM and prefs, if used, are loaded */
-Promise.all(readyPromises)
-	.then(()=>{
-		return weh.rpc.call("appReady",{
-			uiName: weh.uiName
-		});
-	}).then(function () {
-		appStarted = true;
-		if(triggerRequested) {
-			let result = triggerArgs;
-			triggerArgs = undefined;
-			triggerRequested = false;
-			weh.doTrigger(result);
-		}
-	})
-	.catch((err)=>{
-		console.error("app not ready:",err);
-	});
+onDOMLoaded.then(pref_promise).then(() => weh.rpc.call("appReady", {
+  uiName: weh.uiName
+})).then(() => {
+  appStarted = true;
+  if(triggerRequested) {
+    let result = triggerArgs;
+    triggerArgs = undefined;
+    triggerRequested = false;
+    weh.doTrigger(result);
+  }
+}).catch((err) => {
+  console.error("app not ready:",err);
+});
 
 var triggerRequested = false;
 var triggerArgs = undefined;

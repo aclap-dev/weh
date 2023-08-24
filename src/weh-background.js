@@ -137,43 +137,32 @@ function Parse(str) {
 }
 
 var lastHash = 0;
-var prefs = {};
 
-try {
-	var prefsStr = localStorage.getItem("weh-prefs");
-	if(prefsStr===null) {
-		browser.storage.local.get("weh-prefs")
-			.then((result)=>{
-				var wePrefs = result["weh-prefs"];
-				if(wePrefs)
-					wehPrefs.assign(wePrefs);
-			})
-	} else {
-		prefs = Parse(prefsStr);
-		lastHash = Hash(prefsStr);
-	}
-} catch(e) {}
-
-wehPrefs.assign(prefs);
-wehPrefs.on("",{
-	pack: true
-},function(newPrefs,oldPrefs) {
-	Object.assign(prefs,newPrefs);
-	var prefsStr = Stringify(prefs);
-	var hash = Hash(prefsStr);
-	if(hash!=lastHash) {
-		lastHash = hash;
-		localStorage.setItem("weh-prefs",prefsStr);
-		browser.storage.local.set({
-			"weh-prefs": prefs
-		});
-	}
-	Object.keys(apps).forEach((app)=>{
-		var appOptions = apps[app];
-		if(appOptions.usePrefs) {
-			weh.rpc.call(app,"setPrefs",newPrefs);
-		}
-	});
+// Init pref from local storage
+browser.storage.local.get("weh-prefs").then(entries => {
+  let prefs = entries["weh-prefs"] || {};
+  wehPrefs.assign(prefs);
+  wehPrefs.on("",{
+    pack: true
+  }, function(newPrefs,oldPrefs) {
+    Object.assign(prefs,newPrefs);
+    var prefsStr = Stringify(prefs);
+    var hash = Hash(prefsStr);
+    if(hash!=lastHash) {
+      lastHash = hash;
+      browser.storage.local.set({
+        "weh-prefs": prefs
+      });
+    }
+    Object.keys(apps).forEach((app)=>{
+      var appOptions = apps[app];
+      if(appOptions.usePrefs) {
+        weh.rpc.call(app,"setPrefs",newPrefs);
+      }
+    });
+  });
+}).catch(e => {
+  console.error("web-background error:", e);
 });
 
 const waiting = {};
