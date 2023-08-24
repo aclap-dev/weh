@@ -17,20 +17,12 @@ var customStrings = {}
 const SUBST_RE = new RegExp("\\$[a-zA-Z]*([0-9]+)\\$","g");
 
 function Load() {
-	try {
-		customStrings = JSON.parse(window.localStorage.getItem("wehI18nCustom"));
-		if(customStrings===null) {
-			customStrings = {};
-			browser.storage.local.get("wehI18nCustom")
-				.then((result)=>{
-					var weCustomStrings = result.wehI18nCustom;
-					if(weCustomStrings)
-						Object.assign(customStrings,weCustomStrings);
-				});
-		}
-	} catch(e) {
-		customStrings = {};
-	}
+  browser.storage.local.get("wehI18nCustom").then((result) => {
+    var weCustomStrings = result.wehI18nCustom;
+    if (weCustomStrings) {
+      Object.assign(customStrings, weCustomStrings);
+    }
+  });
 }
 Load();
 

@@ -23,24 +23,23 @@ import 'css/weh-form-states.css';
 const initialState = {};
 var needRestore = false;
 
-function Initialize() {
-	var custom = {};
-	function SetCustomMessages(customMessages) {
-	}
-	try {
-		var customMessages = JSON.parse(window.localStorage.getItem("wehI18nCustom"));
-		if(customMessages===null) {
-			customMessages = {};
-			needRestore = true;
-		} else
-			Object.keys(customMessages).forEach((key)=>{
-				custom[key] = customMessages[key].message;
-			});
-	} catch(e) {}
-	initialState.custom = custom;
-	initialState.keys = Object.keys(i18nKeys);
-	initialState.modified = {};
+async function Initialize() {
+  let storage = await browser.storage.local.get("wehI18nCustom");
+  let wehI18nCustom = storage.wehI18nCustom;
+  let custom = {};
+  if (!wehI18nCustom) {
+    needRestore = true;
+  } else {
+    let keys = Object.keys(wehI18nCustom);
+    keys.forEach((key) => {
+      custom[key] = wehI18nCustom[key].message;
+    });
+  }
+  initialState.custom = custom;
+  initialState.keys = Object.keys(i18nKeys);
+  initialState.modified = {};
 }
+
 Initialize();
 
 export function reducer(state=initialState,action) {
@@ -67,7 +66,6 @@ export function reducer(state=initialState,action) {
 					message: state.custom[key]
 				}
 			});
-	        window.localStorage.setItem("wehI18nCustom",JSON.stringify(customMessages));
 			browser.storage.local.set({
 				"wehI18nCustom": customMessages
 			});

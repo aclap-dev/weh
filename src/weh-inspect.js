@@ -66,23 +66,6 @@ if(browser.runtime.onMessageExternal) {
                 wehPrefs[message.pref] = message.value;
                 sendResponse(true);
                 break;
-			case "weh#get-storage":
-                inspectorId = sender.id;
-                GetStorageData()
-					.then((data) => {
-						browser.runtime.sendMessage(inspectorId,{
-							type: "weh#storage",
-							storage: data
-						});
-					})
-					.catch((err)=>{
-						console.error("Error get storage data",err);
-					});
-				sendResponse({
-					type: "weh#storage-pending"
-				});
-                break;
- 
 		}
 	});
 	inspect = {
@@ -90,53 +73,6 @@ if(browser.runtime.onMessageExternal) {
 			console.info("TODO implement inspect.send");
 		}
 	}
-}
-
-function GetStorageData() {
-	return new Promise((resolve,reject) => {
-		var data = {};
-		["localStorage","sessionStorage"].forEach(function(which) {
-			try {
-				var storage = window[which];
-				if(storage) {
-					var webStorage = {};
-					for(var i=0; i<storage.length; i++) {
-						var key = storage.key(i);
-						var value = storage.getItem(key);
-						try {
-							webStorage[key] = JSON.parse(value);
-						} catch(e) {
-							webStorage[key] = value;
-						}
-					}
-					data[which] = webStorage;
-				}
-			} catch(e) {}
-		});
-		var storagePromises = [];
-		["local","sync","managed"].forEach(function(which) {
-			try {
-				var storage = browser.storage && browser.storage[which];
-				if(storage) {
-					return new Promise((resolve, reject) => {
-						var storagePromise = storage.get(null)
-							.then((items) => {
-								data[which] = items;
-							})
-							.catch((err)=>{
-
-							})
-						storagePromises.push(storagePromise);						
-					});
-				}
-			} catch(e) {}
-		});
-		Promise.all(storagePromises)
-			.then(()=>{
-				resolve(data);
-			})
-			.catch(reject);
-	});
 }
 
 module.exports = inspect;
