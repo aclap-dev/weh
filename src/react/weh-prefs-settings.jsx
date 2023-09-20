@@ -42,7 +42,7 @@ export function reducer(state=initialState,action) {
 				flags.isDefault = false;
 			if(value!==state.values[prefName])
 				flags.isModified = true;
-			if(!weh.prefs.isValid(prefName,value))
+			if(!weh.unsafe_prefs.isValid(prefName,value))
 				flags.isValid = false;
 		});
 		return flags;
@@ -92,7 +92,7 @@ export function reducer(state=initialState,action) {
 			break;
 
 		case "PREFS_SAVE":
-			weh.prefs.assign(state.current);
+			weh.unsafe_prefs.assign(state.current);
 			break;
 	}
 	return state;
@@ -176,7 +176,7 @@ class extends React.Component {
             value = this.state.value;
         if(!spec)
             return false;
-        return weh.prefs.isValid(this.props.prefName,value);
+        return weh.unsafe_prefs.isValid(this.props.prefName,value);
     }
 
     formGroupClass() {
@@ -298,7 +298,7 @@ export var WehPrefsControls = connect(
 );
 
 export function listenPrefs(store) {
-	const wehPrefs = weh.prefs;
+	const wehPrefs = weh.unsafe_prefs;
 	wehPrefs.on("",{ 
 			pack: true
 		},(prefs)=>{
