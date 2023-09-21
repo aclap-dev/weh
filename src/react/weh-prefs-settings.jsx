@@ -19,14 +19,16 @@ import 'css/weh-form-states.css';
 
 import weh from 'weh-content';
 
-const initialState = {
-	values: {},		// the saved pref values
-	current: {}, // prefs values being edited
-	specs: {},  // prefs specifications
-	flags: {}  // prefs flags
-}
-
-export function reducer(state=initialState,action) {
+export function reducer(state, action) {
+  if (!state) {
+    state = {
+      values: weh.unsafe_prefs.getAll(),
+      current: weh.unsafe_prefs.getAll(),
+      specs: weh.unsafe_prefs.getSpecs(),
+      flags: {},
+    };
+    state.flags = GetFlags();
+  }
 
 	function GetFlags() {
 		var flags = {
