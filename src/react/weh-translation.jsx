@@ -20,27 +20,13 @@ import WehHeader from 'react/weh-header';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'css/weh-form-states.css';
 
-const initialState = {};
-var needRestore = false;
+let needRestore = true;
 
-async function Initialize() {
-  let storage = await browser.storage.local.get("wehI18nCustom");
-  let wehI18nCustom = storage.wehI18nCustom;
-  let custom = {};
-  if (!wehI18nCustom) {
-    needRestore = true;
-  } else {
-    let keys = Object.keys(wehI18nCustom);
-    keys.forEach((key) => {
-      custom[key] = wehI18nCustom[key].message;
-    });
-  }
-  initialState.custom = custom;
-  initialState.keys = Object.keys(i18nKeys);
-  initialState.modified = {};
-}
-
-Initialize();
+const initialState = {
+  keys: Object.keys(i18nKeys),
+  custom: {},
+  modified: {},
+};
 
 export function reducer(state=initialState,action) {
 	switch(action.type) {

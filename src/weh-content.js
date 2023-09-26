@@ -27,7 +27,6 @@ var urlParams = typeof _wehPanelName !== "undefined" && { panel: _wehPanelName }
 if (!urlParams.panel) throw new Error("Panel name not defined in URL");
 
 weh.uiName = urlParams.panel;
-var usePrefs = !urlParams.noprefs;
 
 /* setting up RPC */
 weh.rpc = require('weh-rpc');
@@ -48,7 +47,6 @@ port.onMessage.addListener((message) => {
 /* notify background app is started */
 weh.rpc.call("appStarted", {
 		uiName: weh.uiName,
-		usePrefs: usePrefs
 	}).catch(function (err) {
 		console.info("appStarted failed", err);
 	});
@@ -58,9 +56,9 @@ let onDOMLoaded = new Promise((resolve, _) => {
   window.addEventListener("DOMContentLoaded", resolve);
 });
 
-async function init_prefs() {
-  let wehPrefs = require('weh-prefs');
-  weh.prefs = wehPrefs;
+weh.unsafe_prefs = require('weh-prefs');
+weh.prefs = (async () => {
+  let wehPrefs = weh.unsafe_prefs;
   let entries = await browser.storage.local.get("weh-prefs");
   let initialPrefs = entries["weh-prefs"] || {};
   wehPrefs.assign(initialPrefs);
@@ -75,27 +73,35 @@ async function init_prefs() {
   let all_prefs = await weh.rpc.call("prefsGetAll");
   wehPrefs.assign(all_prefs);
   wehPrefs.forceNotify(false);
-}
+  return wehPrefs;
+})();
 
-let pref_promise = Promise.resolve();
-if (usePrefs) {
-  pref_promise = init_prefs();
-}
+/* setting up translation */
+let i18n = require("weh-i18n");
+weh._ = i18n.getMessage;
 
 /* notifies app ready: DOM and prefs, if used, are loaded */
-onDOMLoaded.then(pref_promise).then(() => weh.rpc.call("appReady", {
-  uiName: weh.uiName
-})).then(() => {
+// weh.is_safe is a promise which will return when weh
+// is safe to use.
+weh.is_safe = (async () => {
+  await onDOMLoaded;
+  await weh.prefs;
+  await i18n.custom_strings_ready;
+  await weh.rpc.call("appReady", {
+    uiName: weh.uiName
+  });
   appStarted = true;
-  if(triggerRequested) {
-    let result = triggerArgs;
-    triggerArgs = undefined;
-    triggerRequested = false;
-    weh.doTrigger(result);
+  try {
+    if(triggerRequested) {
+      let result = triggerArgs;
+      triggerArgs = undefined;
+      triggerRequested = false;
+      weh.doTrigger(result);
+    }
+  } catch (err) {
+    console.error("app not ready:",err);
   }
-}).catch((err) => {
-  console.error("app not ready:",err);
-});
+})();
 
 var triggerRequested = false;
 var triggerArgs = undefined;
@@ -114,9 +120,6 @@ weh.trigger = function (result) {
 		triggerRequested = true;
 	}
 }
-
-/* setting up translation */
-weh._ = require("weh-i18n").getMessage;
 
 /* utility functions */
 weh.copyToClipboard = function (data, mimeType) {

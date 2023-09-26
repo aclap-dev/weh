@@ -105,9 +105,6 @@ weh._ = require('weh-i18n').getMessage;
 weh.ui = require('weh-ui');
 weh.openedContents = () => Object.keys(apps);
 
-var wehPrefs = require('weh-prefs');
-weh.prefs = wehPrefs;
-
 function Hash(str){
 	var hash = 0, char;
 	if (str.length === 0) return hash;
@@ -139,7 +136,10 @@ function Parse(str) {
 var lastHash = 0;
 
 // Init pref from local storage
-browser.storage.local.get("weh-prefs").then(entries => {
+
+weh.unsafe_prefs = require('weh-prefs');
+weh.prefs = browser.storage.local.get("weh-prefs").then(entries => {
+  let wehPrefs = weh.unsafe_prefs;
   let prefs = entries["weh-prefs"] || {};
   wehPrefs.assign(prefs);
   wehPrefs.on("",{
@@ -156,11 +156,10 @@ browser.storage.local.get("weh-prefs").then(entries => {
     }
     Object.keys(apps).forEach((app)=>{
       var appOptions = apps[app];
-      if(appOptions.usePrefs) {
-        weh.rpc.call(app,"setPrefs",newPrefs);
-      }
+      weh.rpc.call(app,"setPrefs",newPrefs);
     });
   });
+  return wehPrefs;
 }).catch(e => {
   console.error("web-background error:", e);
 });
@@ -188,13 +187,16 @@ weh.wait = (id,options={}) => {
 }
 
 weh.rpc.listen({
-	prefsGetAll: () => {
+	prefsGetAll: async () => {
+		let wehPrefs = await weh.prefs;
 		return wehPrefs.getAll();
 	},
-	prefsGetSpecs: () => {
+	prefsGetSpecs: async () => {
+		let wehPrefs = await weh.prefs;
 		return wehPrefs.getSpecs();
 	},
-	prefsSet: (prefs) => {
+	prefsSet: async (prefs) => {
+		let wehPrefs = await weh.prefs;
 		return wehPrefs.assign(prefs);
 	},
 	trigger: (id,result) => {

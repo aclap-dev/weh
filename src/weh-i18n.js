@@ -16,17 +16,19 @@ var customStrings = {}
 
 const SUBST_RE = new RegExp("\\$[a-zA-Z]*([0-9]+)\\$","g");
 
-function Load() {
-  browser.storage.local.get("wehI18nCustom").then((result) => {
-    var weCustomStrings = result.wehI18nCustom;
-    if (weCustomStrings) {
-      Object.assign(customStrings, weCustomStrings);
-    }
-  });
-}
-Load();
+let has_loaded = false;
+let custom_strings_ready = browser.storage.local.get("wehI18nCustom").then((result) => {
+  has_loaded = true;
+  var weCustomStrings = result.wehI18nCustom;
+  if (weCustomStrings) {
+    Object.assign(customStrings, weCustomStrings);
+  }
+});
 
 function GetMessage(messageName,substitutions) {
+	if (!has_loaded) {
+		console.warn("Using `weh._` before custom strings were loaded:", messageName);
+	}
 	if(/-/.test(messageName)) {
 		var fixedName = messageName.replace(/-/g,"_");
 		console.warn("Wrong i18n message name. Should it be",fixedName,"instead of",messageName,"?");
@@ -50,6 +52,6 @@ function GetMessage(messageName,substitutions) {
 
 module.exports = {
 	getMessage: GetMessage,
-	reload: Load			
+  custom_strings_ready,
 }
 
